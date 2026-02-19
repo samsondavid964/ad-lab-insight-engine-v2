@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Globe, Building2, ArrowRight } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon, Globe, Building2, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReportFormProps {
   onSubmit: (data: { businessName: string; websiteUrl: string; startDate: string; endDate: string }) => void;
@@ -13,13 +17,18 @@ interface ReportFormProps {
 const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
   const [businessName, setBusinessName] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!businessName.trim() || !websiteUrl.trim() || !startDate || !endDate) return;
-    onSubmit({ businessName: businessName.trim(), websiteUrl: websiteUrl.trim(), startDate, endDate });
+    onSubmit({
+      businessName: businessName.trim(),
+      websiteUrl: websiteUrl.trim(),
+      startDate: format(startDate, "yyyy-MM-dd"),
+      endDate: format(endDate, "yyyy-MM-dd"),
+    });
   };
 
   return (
@@ -61,32 +70,65 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startDate" className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                <Calendar className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
-                Start Month
+              <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                <CalendarIcon className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
+                Start Date
               </Label>
-              <Input
-                id="startDate"
-                type="month"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
-                required
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className={cn(
+                      "w-full h-12 justify-start text-left font-normal border-slate-200 bg-slate-50 hover:bg-white rounded-xl transition-all",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "MMM d, yyyy") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endDate" className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                <Calendar className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
-                End Month
+              <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                <CalendarIcon className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
+                End Date
               </Label>
-              <Input
-                id="endDate"
-                type="month"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
-                required
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className={cn(
+                      "w-full h-12 justify-start text-left font-normal border-slate-200 bg-slate-50 hover:bg-white rounded-xl transition-all",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "MMM d, yyyy") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    disabled={(date) => startDate ? date < startDate : false}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
