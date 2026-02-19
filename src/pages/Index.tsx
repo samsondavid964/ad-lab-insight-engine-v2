@@ -16,7 +16,7 @@ type AppState = "form" | "loading" | "report";
 
 const Index = () => {
   const [state, setState] = useState<AppState>("form");
-  const [businessName, setBusinessName] = useState("");
+  const [clientName, setClientName] = useState("");
   const [reportHtml, setReportHtml] = useState("");
   const [history, setHistory] = useState<ReportHistoryEntry[]>([]);
   const [elapsed, setElapsed] = useState(0);
@@ -38,12 +38,12 @@ const Index = () => {
   useEffect(() => () => cleanup(), [cleanup]);
 
   const handleSubmit = async (data: {
-    businessName: string;
-    websiteUrl: string;
+    clientName: string;
+    googleAdsId: string;
     startDate: string;
     endDate: string;
   }) => {
-    setBusinessName(data.businessName);
+    setClientName(data.clientName);
     setState("loading");
     setElapsed(0);
 
@@ -51,14 +51,14 @@ const Index = () => {
       const job_id = generateJobId();
       await initiateReport({
         job_id,
-        business_name: data.businessName,
-        website_url: data.websiteUrl,
+        client_name: data.clientName,
+        google_ads_id: data.googleAdsId,
         date_range: { start: data.startDate, end: data.endDate },
       });
       const entry: ReportHistoryEntry = {
         id: job_id,
-        businessName: data.businessName,
-        websiteUrl: data.websiteUrl,
+        clientName: data.clientName,
+        googleAdsId: data.googleAdsId,
         dateRange: { start: data.startDate, end: data.endDate },
         jobId: job_id,
         createdAt: new Date().toISOString(),
@@ -117,27 +117,27 @@ const Index = () => {
   const handleNewReport = () => {
     cleanup();
     setReportHtml("");
-    setBusinessName("");
+    setClientName("");
     setState("form");
   };
 
   const handleViewHistory = (entry: ReportHistoryEntry) => {
     if (entry.html) {
-      setBusinessName(entry.businessName);
+      setClientName(entry.clientName);
       setReportHtml(entry.html);
       setState("report");
     }
   };
 
   if (state === "loading") {
-    return <LoadingState businessName={businessName} elapsedSeconds={elapsed} />;
+    return <LoadingState businessName={clientName} elapsedSeconds={elapsed} />;
   }
 
   if (state === "report") {
     return (
       <ReportViewer
         html={reportHtml}
-        businessName={businessName}
+        businessName={clientName}
         onNewReport={handleNewReport}
       />
     );
