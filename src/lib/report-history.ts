@@ -1,7 +1,7 @@
 export interface ReportHistoryEntry {
   id: string;
-  businessName: string;
-  websiteUrl: string;
+  clientName: string;
+  googleAdsId: string;
   dateRange: { start: string; end: string };
   jobId: string;
   createdAt: string;

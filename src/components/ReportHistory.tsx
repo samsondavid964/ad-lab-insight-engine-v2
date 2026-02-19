@@ -28,8 +28,8 @@ const ReportHistory = ({ history, onView, onRefresh }: ReportHistoryProps) => {
           <Card key={entry.id} className="border-border/50 hover:border-accent/30 transition-colors">
             <CardContent className="p-4 flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-foreground truncate">{entry.businessName}</p>
-                <p className="text-sm text-muted-foreground truncate">{entry.websiteUrl}</p>
+                <p className="font-semibold text-foreground truncate">{entry.clientName}</p>
+                <p className="text-sm text-muted-foreground truncate">{entry.googleAdsId}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {new Date(entry.createdAt).toLocaleDateString()} · {entry.dateRange.start} — {entry.dateRange.end}
                 </p>

@@ -11,8 +11,8 @@ export function generateJobId(): string {
 
 export interface InitiatePayload {
   job_id: string;
-  business_name: string;
-  website_url: string;
+  client_name: string;
+  google_ads_id: string;
   date_range: { start: string; end: string };
 }
 

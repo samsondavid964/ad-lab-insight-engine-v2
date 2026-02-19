@@ -6,26 +6,26 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Globe, Building2, ArrowRight } from "lucide-react";
+import { CalendarIcon, Hash, Building2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ReportFormProps {
-  onSubmit: (data: { businessName: string; websiteUrl: string; startDate: string; endDate: string }) => void;
+  onSubmit: (data: { clientName: string; googleAdsId: string; startDate: string; endDate: string }) => void;
   isLoading: boolean;
 }
 
 const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
-  const [businessName, setBusinessName] = useState("");
-  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [googleAdsId, setGoogleAdsId] = useState("");
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!businessName.trim() || !websiteUrl.trim() || !startDate || !endDate) return;
+    if (!clientName.trim() || !googleAdsId.trim() || !startDate || !endDate) return;
     onSubmit({
-      businessName: businessName.trim(),
-      websiteUrl: websiteUrl.trim(),
+      clientName: clientName.trim(),
+      googleAdsId: googleAdsId.trim(),
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd"),
     });
@@ -36,15 +36,15 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
       <CardContent className="p-8 md:p-10">
         <form onSubmit={handleSubmit} className="space-y-7">
           <div className="space-y-2">
-            <Label htmlFor="businessName" className="text-xs font-bold uppercase tracking-widest text-slate-500">
+            <Label htmlFor="clientName" className="text-xs font-bold uppercase tracking-widest text-slate-500">
               <Building2 className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
-              Business Name
+              Client Name
             </Label>
             <Input
-              id="businessName"
+              id="clientName"
               placeholder="e.g. Acme Corporation"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
               className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
               required
               maxLength={100}
@@ -52,16 +52,16 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="websiteUrl" className="text-xs font-bold uppercase tracking-widest text-slate-500">
-              <Globe className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
-              Website URL
+            <Label htmlFor="googleAdsId" className="text-xs font-bold uppercase tracking-widest text-slate-500">
+              <Hash className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
+              Google Ads ID
             </Label>
             <Input
-              id="websiteUrl"
-              type="url"
-              placeholder="https://www.example.com"
-              value={websiteUrl}
-              onChange={(e) => setWebsiteUrl(e.target.value)}
+              id="googleAdsId"
+              type="text"
+              placeholder="e.g. 123-456-7890"
+              value={googleAdsId}
+              onChange={(e) => setGoogleAdsId(e.target.value)}
               className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
               required
               maxLength={255}
@@ -134,7 +134,7 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
 
           <Button
             type="submit"
-            disabled={isLoading || !businessName.trim() || !websiteUrl.trim() || !startDate || !endDate}
+            disabled={isLoading || !clientName.trim() || !googleAdsId.trim() || !startDate || !endDate}
             className="w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
           >
             Generate Report
