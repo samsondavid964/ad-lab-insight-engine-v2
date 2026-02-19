@@ -1,45 +1,49 @@
 
 
-# Ad-Lab Traffic Intelligence Report Generator
+# Generate job_id on Frontend and Include in Webhook Payload
 
-## Overview
-An internal tool for Ad-Lab agency that generates beautiful, in-depth website traffic analysis reports for any client. The app sends requests to n8n via webhook using an async polling pattern, then renders the returned HTML report.
+## What Changes
 
----
+Instead of receiving a `job_id` from the webhook response, the frontend will generate a random 16-digit numeric ID before sending the request, include it in the POST body, and immediately start polling with it.
 
-## Page 1: Report Request Form (Landing Page)
-- **Ad-Lab branding** — Logo displayed prominently at the top, dark navy gradient header matching the report's premium design aesthetic
-- **Input form** with three fields:
-  - **Business Name** (text input)
-  - **Website URL** (text input with URL validation)
-  - **Date Range** (date range picker — start/end month selectors)
-- **"Generate Report" button** — triggers the webhook call
-- Clean, minimal layout with Inter + Playfair Display fonts, navy/blue palette
+## Technical Details
 
-## Page 2: Loading / Processing State
-- After submitting, the app POSTs to `https://ad-lab.app.n8n.cloud/webhook/initiate-report` with the form data
-- Receives a `job_id` back instantly (HTTP 202)
-- Displays a polished loading screen with:
-  - Ad-Lab logo
-  - Animated progress indicator
-  - "Generating your report..." messaging with the business name
-  - Estimated wait time note (~1 minute)
-- **Polling**: Pings `https://ad-lab.app.n8n.cloud/webhook/poll-for-completion?job_id=XXX` every 5 seconds
-- Timeout after ~3 minutes with a friendly error/retry message
+### 1. Update `src/lib/api.ts`
 
-## Page 3: Report Display
-- Once polling returns the completed HTML, render it in a styled iframe/container
-- The report follows the exact design of the attached reference — tabbed sections for Executive Summary, Traffic Analysis, Channel Mix, Geographic, Competitors, Keywords, and Action Plan
-- **Download as HTML** button to save the report locally
-- **Generate New Report** button to return to the form
+- Add a helper function to generate a 16-digit random number string (e.g., `"4829173650284917"`)
+- Add `job_id` to the `InitiatePayload` interface
+- Update `initiateReport` to include `job_id` in the JSON body
+- The function will now return the locally-generated `job_id` instead of relying on the response body
 
-## Design & Branding
-- Ad-Lab logo used as favicon and in the landing page header
-- Color palette: Navy/dark blue gradient header, white cards, blue accents
-- Typography: Playfair Display for headings, Inter for body text
-- Premium, agency-grade aesthetic
+### 2. Update `src/pages/Index.tsx`
 
-## Report History
-- Local storage of previously generated reports (business name, date, job_id)
-- Quick-access list on the landing page to re-view past reports
+- Import the ID generator from `api.ts`
+- Generate the `job_id` before calling `initiateReport`
+- Pass it into the payload
+- Use the same `job_id` for polling (no change to polling logic itself)
+
+### Helper Function
+
+```typescript
+function generateJobId(): string {
+  let id = "";
+  for (let i = 0; i < 16; i++) {
+    id += Math.floor(Math.random() * 10).toString();
+  }
+  return id;
+}
+```
+
+### Updated Payload Shape
+
+```json
+{
+  "job_id": "4829173650284917",
+  "business_name": "Acme Corp",
+  "website_url": "https://example.com",
+  "date_range": { "start": "2026-01-01", "end": "2026-01-31" }
+}
+```
+
+No other files need changes. The polling logic and report history remain the same since they already use the `job_id` value.
 
