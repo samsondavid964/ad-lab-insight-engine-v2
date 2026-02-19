@@ -35,10 +35,19 @@ export async function initiateReport(payload: InitiatePayload): Promise<void> {
 }
 export async function pollForCompletion(jobId: string): Promise<PollResponse> {
   const res = await fetch(`${POLL_URL}?job_id=${encodeURIComponent(jobId)}`);
+  if (!res.ok) throw new Error(`Poll failed: ${res.status}`);
 
-  if (!res.ok) {
-    throw new Error(`Poll failed: ${res.status}`);
+  const text = await res.text();
+  const data = JSON.parse(text);
+
+  // Handle case where html might be double-encoded
+  if (data.status === "complete" && data.html) {
+    let html = data.html;
+    if (html.startsWith('"') || html.startsWith('\\"')) {
+      try { html = JSON.parse(html); } catch { /* use as-is */ }
+    }
+    return { status: "complete", html };
   }
 
-  return res.json();
+  return data;
 }
