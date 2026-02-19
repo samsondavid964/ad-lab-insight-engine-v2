@@ -1,49 +1,45 @@
 
 
-# Generate job_id on Frontend and Include in Webhook Payload
+# Fix Polling Response Handling
 
-## What Changes
+## The Situation
 
-Instead of receiving a `job_id` from the webhook response, the frontend will generate a random 16-digit numeric ID before sending the request, include it in the POST body, and immediately start polling with it.
+The polling webhook returns `{"status":"complete","html":"..."}` where the HTML value is a single-line string with escaped quotes (`\"`) and `\n` for line breaks. The current code uses `res.json()` which should handle standard JSON escaping automatically.
 
-## Technical Details
+However, to be safe against edge cases (e.g., the response arriving as plain text instead of proper `application/json`, or double-encoding), the fix will add explicit response handling.
 
-### 1. Update `src/lib/api.ts`
+## Changes
 
-- Add a helper function to generate a 16-digit random number string (e.g., `"4829173650284917"`)
-- Add `job_id` to the `InitiatePayload` interface
-- Update `initiateReport` to include `job_id` in the JSON body
-- The function will now return the locally-generated `job_id` instead of relying on the response body
+### `src/lib/api.ts` — Update `pollForCompletion`
 
-### 2. Update `src/pages/Index.tsx`
+Instead of blindly calling `res.json()`, the function will:
 
-- Import the ID generator from `api.ts`
-- Generate the `job_id` before calling `initiateReport`
-- Pass it into the payload
-- Use the same `job_id` for polling (no change to polling logic itself)
-
-### Helper Function
+1. Read the response as **raw text** first
+2. Parse it as JSON manually
+3. If the `html` field is still a JSON-escaped string (double-encoded), detect and unescape it
+4. Return the normalized `PollResponse`
 
 ```typescript
-function generateJobId(): string {
-  let id = "";
-  for (let i = 0; i < 16; i++) {
-    id += Math.floor(Math.random() * 10).toString();
+export async function pollForCompletion(jobId: string): Promise<PollResponse> {
+  const res = await fetch(`${POLL_URL}?job_id=${encodeURIComponent(jobId)}`);
+  if (!res.ok) throw new Error(`Poll failed: ${res.status}`);
+
+  const text = await res.text();
+  const data = JSON.parse(text);
+
+  // Handle case where html might be double-encoded
+  if (data.status === "complete" && data.html) {
+    let html = data.html;
+    // If the html string still starts with a quote, it may be double-encoded
+    if (html.startsWith('"') || html.startsWith('\\"')) {
+      try { html = JSON.parse(html); } catch { /* use as-is */ }
+    }
+    return { status: "complete", html };
   }
-  return id;
+
+  return data;
 }
 ```
 
-### Updated Payload Shape
-
-```json
-{
-  "job_id": "4829173650284917",
-  "business_name": "Acme Corp",
-  "website_url": "https://example.com",
-  "date_range": { "start": "2026-01-01", "end": "2026-01-31" }
-}
-```
-
-No other files need changes. The polling logic and report history remain the same since they already use the `job_id` value.
+This is a single-file change to `src/lib/api.ts`. No other files need modification — `Index.tsx` and `ReportViewer.tsx` already handle the `PollResponse` correctly once the HTML string is properly decoded.
 
