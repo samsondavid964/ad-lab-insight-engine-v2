@@ -5,7 +5,7 @@ import ReportForm from "@/components/ReportForm";
 import LoadingState from "@/components/LoadingState";
 import ReportViewer from "@/components/ReportViewer";
 import ReportHistory from "@/components/ReportHistory";
-import { initiateReport, pollForCompletion } from "@/lib/api";
+import { initiateReport, pollForCompletion, generateJobId } from "@/lib/api";
 import {
   getReportHistory,
   saveReport,
@@ -48,12 +48,13 @@ const Index = () => {
     setElapsed(0);
 
     try {
-      const { job_id } = await initiateReport({
+      const job_id = generateJobId();
+      await initiateReport({
+        job_id,
         business_name: data.businessName,
         website_url: data.websiteUrl,
         date_range: { start: data.startDate, end: data.endDate },
       });
-
       const entry: ReportHistoryEntry = {
         id: job_id,
         businessName: data.businessName,
