@@ -23,12 +23,12 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
   };
 
   return (
-    <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-sm">
-      <CardContent className="p-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <Card className="border border-white/10 shadow-2xl bg-white rounded-2xl overflow-hidden">
+      <CardContent className="p-8 md:p-10">
+        <form onSubmit={handleSubmit} className="space-y-7">
           <div className="space-y-2">
-            <Label htmlFor="businessName" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              <Building2 className="inline-block w-4 h-4 mr-2 -mt-0.5" />
+            <Label htmlFor="businessName" className="text-xs font-bold uppercase tracking-widest text-slate-500">
+              <Building2 className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
               Business Name
             </Label>
             <Input
@@ -36,15 +36,15 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
               placeholder="e.g. Acme Corporation"
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              className="h-12 text-base bg-background border-border/50 focus:border-accent"
+              className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
               required
               maxLength={100}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="websiteUrl" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              <Globe className="inline-block w-4 h-4 mr-2 -mt-0.5" />
+            <Label htmlFor="websiteUrl" className="text-xs font-bold uppercase tracking-widest text-slate-500">
+              <Globe className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
               Website URL
             </Label>
             <Input
@@ -53,7 +53,7 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
               placeholder="https://www.example.com"
               value={websiteUrl}
               onChange={(e) => setWebsiteUrl(e.target.value)}
-              className="h-12 text-base bg-background border-border/50 focus:border-accent"
+              className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
               required
               maxLength={255}
             />
@@ -61,8 +61,8 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startDate" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                <Calendar className="inline-block w-4 h-4 mr-2 -mt-0.5" />
+              <Label htmlFor="startDate" className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                <Calendar className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
                 Start Month
               </Label>
               <Input
@@ -70,13 +70,13 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
                 type="month"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="h-12 text-base bg-background border-border/50 focus:border-accent"
+                className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endDate" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                <Calendar className="inline-block w-4 h-4 mr-2 -mt-0.5" />
+              <Label htmlFor="endDate" className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                <Calendar className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
                 End Month
               </Label>
               <Input
@@ -84,7 +84,7 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
                 type="month"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="h-12 text-base bg-background border-border/50 focus:border-accent"
+                className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
                 required
               />
             </div>
@@ -93,7 +93,7 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
           <Button
             type="submit"
             disabled={isLoading || !businessName.trim() || !websiteUrl.trim() || !startDate || !endDate}
-            className="w-full h-14 text-lg font-semibold bg-accent hover:bg-blue-glow text-accent-foreground shadow-lg hover:shadow-xl transition-all duration-300"
+            className="w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
           >
             Generate Report
             <ArrowRight className="ml-2 w-5 h-5" />

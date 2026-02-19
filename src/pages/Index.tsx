@@ -66,14 +66,12 @@ const Index = () => {
       currentEntryRef.current = entry;
       setHistory(getReportHistory());
 
-      // Start elapsed timer
       timerRef.current = setInterval(() => {
         setElapsed((s) => s + 1);
       }, 1000);
 
-      // Start polling
       let attempts = 0;
-      const maxAttempts = 36; // 3 minutes at 5s intervals
+      const maxAttempts = 36;
 
       pollRef.current = setInterval(async () => {
         attempts++;
@@ -84,7 +82,6 @@ const Index = () => {
             cleanup();
             setReportHtml(result.html);
 
-            // Save HTML to history
             if (currentEntryRef.current) {
               currentEntryRef.current.html = result.html;
               saveReport(currentEntryRef.current);
@@ -146,26 +143,32 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-navy text-primary-foreground">
-        <div className="max-w-4xl mx-auto px-6 py-12 text-center">
+    <div className="min-h-screen bg-slate-50">
+      {/* Header with solid navy gradient */}
+      <header className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)" }}>
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-blue-500 blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 rounded-full bg-blue-400 blur-3xl" />
+        </div>
+
+        <div className="relative max-w-4xl mx-auto px-6 pt-12 pb-20 text-center">
           <img
             src={adLabLogo}
             alt="Ad-Lab"
-            className="h-16 mx-auto mb-6 rounded-xl"
+            className="h-20 mx-auto mb-8 rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10"
           />
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
             Traffic Intelligence
           </h1>
-          <p className="text-primary-foreground/70 text-lg max-w-lg mx-auto">
+          <p className="text-blue-200/80 text-lg max-w-lg mx-auto">
             Generate in-depth website traffic analysis reports for any client
           </p>
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="max-w-xl mx-auto px-6 -mt-8 pb-16 relative z-10">
+      {/* Form card overlapping the header */}
+      <main className="max-w-xl mx-auto px-6 -mt-10 pb-16 relative z-10">
         <ReportForm onSubmit={handleSubmit} isLoading={state !== "form"} />
         <ReportHistory
           history={history}
