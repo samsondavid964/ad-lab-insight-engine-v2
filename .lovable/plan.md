@@ -1,45 +1,35 @@
 
 
-# Fix Polling Response Handling
+# Rename Form Fields
 
-## The Situation
+## Summary
+Rename "Website URL" to "Google Ads ID" and "Business Name" to "Client Name" across the UI labels, form state, and the webhook POST body.
 
-The polling webhook returns `{"status":"complete","html":"..."}` where the HTML value is a single-line string with escaped quotes (`\"`) and `\n` for line breaks. The current code uses `res.json()` which should handle standard JSON escaping automatically.
+## Technical Details
 
-However, to be safe against edge cases (e.g., the response arriving as plain text instead of proper `application/json`, or double-encoding), the fix will add explicit response handling.
+### 1. `src/components/ReportForm.tsx`
+- Change label "Business Name" to "Client Name" (with same icon)
+- Change label "Website URL" to "Google Ads ID"
+- Change icon from `Globe` to a suitable alternative (e.g., keep `Globe` or switch to a generic icon)
+- Change input type from `url` to `text` (Google Ads IDs are not URLs)
+- Update placeholder text accordingly (e.g., "e.g. 123-456-7890")
+- Rename internal state variables: `businessName` -> `clientName`, `websiteUrl` -> `googleAdsId`
+- Update the `onSubmit` callback prop type to pass `{ clientName, googleAdsId, startDate, endDate }`
 
-## Changes
+### 2. `src/pages/Index.tsx`
+- Update `handleSubmit` to destructure `clientName` and `googleAdsId` instead of `businessName` and `websiteUrl`
+- Update the POST payload keys sent to the webhook: `business_name` becomes `client_name`, `website_url` becomes `google_ads_id`
+- Update the `ReportHistoryEntry` usage to store `clientName` and `googleAdsId`
+- Update `setBusinessName` references to use the new field name for display purposes
 
-### `src/lib/api.ts` — Update `pollForCompletion`
+### 3. `src/lib/api.ts`
+- Rename `InitiatePayload` fields: `business_name` -> `client_name`, `website_url` -> `google_ads_id`
 
-Instead of blindly calling `res.json()`, the function will:
+### 4. `src/lib/report-history.ts`
+- Rename `ReportHistoryEntry` fields: `businessName` -> `clientName`, `websiteUrl` -> `googleAdsId`
 
-1. Read the response as **raw text** first
-2. Parse it as JSON manually
-3. If the `html` field is still a JSON-escaped string (double-encoded), detect and unescape it
-4. Return the normalized `PollResponse`
+### 5. `src/components/ReportHistory.tsx`
+- Update any references to `entry.businessName` / `entry.websiteUrl` to use the new field names
 
-```typescript
-export async function pollForCompletion(jobId: string): Promise<PollResponse> {
-  const res = await fetch(`${POLL_URL}?job_id=${encodeURIComponent(jobId)}`);
-  if (!res.ok) throw new Error(`Poll failed: ${res.status}`);
-
-  const text = await res.text();
-  const data = JSON.parse(text);
-
-  // Handle case where html might be double-encoded
-  if (data.status === "complete" && data.html) {
-    let html = data.html;
-    // If the html string still starts with a quote, it may be double-encoded
-    if (html.startsWith('"') || html.startsWith('\\"')) {
-      try { html = JSON.parse(html); } catch { /* use as-is */ }
-    }
-    return { status: "complete", html };
-  }
-
-  return data;
-}
-```
-
-This is a single-file change to `src/lib/api.ts`. No other files need modification — `Index.tsx` and `ReportViewer.tsx` already handle the `PollResponse` correctly once the HTML string is properly decoded.
+No changes to polling logic, report rendering, or any other behavior.
 
