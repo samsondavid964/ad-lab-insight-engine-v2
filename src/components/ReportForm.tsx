@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { CalendarIcon, Hash, Building2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CLIENT_NAMES } from "@/lib/clients";
 
 interface ReportFormProps {
   onSubmit: (data: { clientName: string; googleAdsId: string; startDate: string; endDate: string }) => void;
@@ -40,15 +42,18 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
               <Building2 className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
               Client Name
             </Label>
-            <Input
-              id="clientName"
-              placeholder="e.g. Acme Corporation"
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
-              className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
-              required
-              maxLength={100}
-            />
+            <Select onValueChange={setClientName} value={clientName}>
+              <SelectTrigger className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all">
+                <SelectValue placeholder="Select a client" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                {CLIENT_NAMES.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
