@@ -26,7 +26,7 @@ const LoadingState = ({ businessName, elapsedSeconds }: LoadingStateProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  const progress = Math.min((elapsedSeconds / 120) * 100, 95);
+  const progress = Math.min((elapsedSeconds / 300) * 100, 95);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -55,7 +55,7 @@ const LoadingState = ({ businessName, elapsedSeconds }: LoadingStateProps) => {
 
         <div className="animate-shimmer rounded-lg p-4">
           <p className="text-xs text-muted-foreground">
-            This typically takes about 1 minute. Please don't close this page.
+            This typically takes about 5 minutes. Please don't close this page.
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             Elapsed: {Math.floor(elapsedSeconds / 60)}:{String(elapsedSeconds % 60).padStart(2, "0")}
