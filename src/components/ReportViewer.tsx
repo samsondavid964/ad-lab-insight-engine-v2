@@ -61,7 +61,7 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
     <div className="min-h-screen flex flex-col bg-background">
       {/* Toolbar */}
       <div className="bg-navy text-primary-foreground px-6 py-4 flex items-center justify-between shadow-lg">
-        <h2 className="font-display text-lg font-semibold">
+        <h2 className="font-display text-lg font-semibold text-white">
           Report: {businessName}
         </h2>
         <div className="flex gap-3">
