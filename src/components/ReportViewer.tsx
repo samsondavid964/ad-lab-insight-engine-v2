@@ -66,20 +66,20 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
         </h2>
         <div className="flex gap-3">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleDownload}
-            className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
+            className="border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
           >
             <Download className="w-4 h-4 mr-2" />
             Download HTML
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleShare}
             disabled={sharing}
-            className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
+            className="border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
           >
             {sharing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Share2 className="w-4 h-4 mr-2" />}
             Share
