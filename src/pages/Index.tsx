@@ -22,6 +22,7 @@ const Index = () => {
   const [elapsed, setElapsed] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const delayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentEntryRef = useRef<ReportHistoryEntry | null>(null);
 
   useEffect(() => {
@@ -31,8 +32,10 @@ const Index = () => {
   const cleanup = useCallback(() => {
     if (pollRef.current) clearInterval(pollRef.current);
     if (timerRef.current) clearInterval(timerRef.current);
+    if (delayRef.current) clearTimeout(delayRef.current);
     pollRef.current = null;
     timerRef.current = null;
+    delayRef.current = null;
   }, []);
 
   useEffect(() => () => cleanup(), [cleanup]);
@@ -72,42 +75,44 @@ const Index = () => {
       }, 1000);
 
       let attempts = 0;
-      const maxAttempts = 36;
+      const maxAttempts = 16;
 
-      pollRef.current = setInterval(async () => {
-        attempts++;
-        try {
-          const result = await pollForCompletion(job_id);
+      delayRef.current = setTimeout(() => {
+        pollRef.current = setInterval(async () => {
+          attempts++;
+          try {
+            const result = await pollForCompletion(job_id);
 
-          if (result.status === "complete" && result.html) {
-            cleanup();
-            setReportHtml(result.html);
+            if (result.status === "complete" && result.html) {
+              cleanup();
+              setReportHtml(result.html);
 
-            if (currentEntryRef.current) {
-              currentEntryRef.current.html = result.html;
-              saveReport(currentEntryRef.current);
-              setHistory(getReportHistory());
+              if (currentEntryRef.current) {
+                currentEntryRef.current.html = result.html;
+                saveReport(currentEntryRef.current);
+                setHistory(getReportHistory());
+              }
+
+              setState("report");
+              toast.success("Report generated successfully!");
+            } else if (result.status === "error") {
+              cleanup();
+              setState("form");
+              toast.error(result.error || "Report generation failed. Please try again.");
+            } else if (attempts >= maxAttempts) {
+              cleanup();
+              setState("form");
+              toast.error("Report generation timed out. Please try again.");
             }
-
-            setState("report");
-            toast.success("Report generated successfully!");
-          } else if (result.status === "error") {
-            cleanup();
-            setState("form");
-            toast.error(result.error || "Report generation failed. Please try again.");
-          } else if (attempts >= maxAttempts) {
-            cleanup();
-            setState("form");
-            toast.error("Report generation timed out. Please try again.");
+          } catch {
+            if (attempts >= maxAttempts) {
+              cleanup();
+              setState("form");
+              toast.error("Report generation timed out. Please try again.");
+            }
           }
-        } catch {
-          if (attempts >= maxAttempts) {
-            cleanup();
-            setState("form");
-            toast.error("Report generation timed out. Please try again.");
-          }
-        }
-      }, 5000);
+        }, 20000);
+      }, 120000);
     } catch {
       setState("form");
       toast.error("Failed to initiate report. Please check your connection and try again.");
