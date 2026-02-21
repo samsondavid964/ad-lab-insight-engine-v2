@@ -9,8 +9,8 @@ import { initiateReport, pollForCompletion, generateJobId } from "@/lib/api";
 import {
   getReportHistory,
   saveReport,
-  ReportHistoryEntry,
-} from "@/lib/report-history";
+  ReportHistoryEntry } from
+"@/lib/report-history";
 
 type AppState = "form" | "loading" | "report";
 
@@ -56,7 +56,7 @@ const Index = () => {
         job_id,
         client_name: data.clientName,
         google_ads_id: data.googleAdsId,
-        date_range: { start: data.startDate, end: data.endDate },
+        date_range: { start: data.startDate, end: data.endDate }
       });
       const entry: ReportHistoryEntry = {
         id: job_id,
@@ -64,7 +64,7 @@ const Index = () => {
         googleAdsId: data.googleAdsId,
         dateRange: { start: data.startDate, end: data.endDate },
         jobId: job_id,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
       };
       saveReport(entry);
       currentEntryRef.current = entry;
@@ -143,9 +143,9 @@ const Index = () => {
       <ReportViewer
         html={reportHtml}
         businessName={clientName}
-        onNewReport={handleNewReport}
-      />
-    );
+        onNewReport={handleNewReport} />);
+
+
   }
 
   return (
@@ -162,9 +162,9 @@ const Index = () => {
           <img
             src={adLabLogo}
             alt="Ad-Lab"
-            className="h-20 mx-auto mb-8 rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10"
-          />
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+            className="h-20 mx-auto mb-8 rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10" />
+
+          <h1 className="text-5xl md:text-5xl text-white mb-4 font-serif text-center font-extrabold" style={{ fontFamily: "'Playfair Display', serif" }}>
             Traffic Intelligence
           </h1>
           <p className="text-blue-200/80 text-lg max-w-lg mx-auto">
@@ -179,11 +179,11 @@ const Index = () => {
         <ReportHistory
           history={history}
           onView={handleViewHistory}
-          onRefresh={() => setHistory(getReportHistory())}
-        />
+          onRefresh={() => setHistory(getReportHistory())} />
+
       </main>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Index;
