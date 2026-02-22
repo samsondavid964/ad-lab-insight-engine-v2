@@ -21,12 +21,14 @@ const SharedReport = () => {
       }
 
       try {
-        console.log("Downloading report from storage:", id);
+        // Ensure Supabase looks for the .html version.
+        const filenameToDownload = id.endsWith(".html") ? id : `${id}.html`;
+        console.log("Downloading report from storage:", filenameToDownload);
 
-        // Match pattern: Use .download(id)
+        // Match pattern: Use .download(filenameToDownload)
         const { data, error: downloadError } = await supabase.storage
           .from("reports")
-          .download(id);
+          .download(filenameToDownload);
 
         if (downloadError) {
           console.error("Download error:", downloadError);

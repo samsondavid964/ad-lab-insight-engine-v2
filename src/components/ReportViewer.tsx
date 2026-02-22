@@ -97,7 +97,8 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
   const handleShare = async () => {
     setSharing(true);
     try {
-      const filename = `${businessName.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}.html`;
+      const baseFilename = `${businessName.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}`;
+      const filename = `${baseFilename}.html`;
       const file = new Blob([currentHtml], { type: "text/html" });
 
       const { error: uploadError } = await supabase.storage
@@ -106,7 +107,8 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
 
       if (uploadError) throw uploadError;
 
-      const shareUrl = `${window.location.origin}/shared/${filename}`;
+      // Share URL without .html extension to prevent server routing issues (404s)
+      const shareUrl = `${window.location.origin}/shared/${baseFilename}`;
       await navigator.clipboard.writeText(shareUrl);
       toast.success("Link copied to clipboard!");
     } catch (err: any) {
