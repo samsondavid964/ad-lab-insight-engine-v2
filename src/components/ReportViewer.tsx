@@ -30,16 +30,20 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
 
   useEffect(() => {
     if (iframeRef.current) {
+      console.log("Rendering report for:", businessName);
       const doc = iframeRef.current.contentDocument;
       if (doc) {
         doc.open();
         doc.write(html);
         doc.close();
+        console.log("Report HTML injected successfully");
+      } else {
+        console.error("FAILED to access iframe contentDocument. Check sandbox permissions.");
       }
     }
     // Reset edited state when new html comes in
     setEditedHtml(null);
-  }, [html]);
+  }, [html, businessName]);
 
   // Setup chart click handlers when entering edit mode
   useEffect(() => {
@@ -233,7 +237,7 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
         ref={iframeRef}
         className="flex-1 w-full border-0"
         title="Traffic Report"
-        sandbox="allow-scripts"
+        sandbox="allow-scripts allow-same-origin"
       />
     </div>
   );

@@ -37,14 +37,18 @@ const SharedReport = () => {
 
   useEffect(() => {
     if (html && iframeRef.current) {
+      console.log("Rendering shared report:", id);
       const doc = iframeRef.current.contentDocument;
       if (doc) {
         doc.open();
         doc.write(html);
         doc.close();
+        console.log("Shared report HTML injected successfully");
+      } else {
+        console.error("FAILED to access iframe contentDocument. Check sandbox permissions.");
       }
     }
-  }, [html]);
+  }, [html, id]);
 
   if (loading) {
     return (
