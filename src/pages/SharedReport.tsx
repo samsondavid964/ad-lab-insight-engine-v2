@@ -5,45 +5,54 @@ import { X } from "lucide-react";
 
 const SharedReport = () => {
   const { id } = useParams<{ id: string }>();
-  const [html, setHtml] = useState<string | null>(null);
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchReport = async () => {
-      console.log("Attempting to fetch shared report with ID:", id);
+      console.log("[SharedReport] Route param id:", id);
 
       if (!id) {
-        console.error("No report ID provided in URL");
+        console.error("[SharedReport] No report ID provided in URL");
         setError("No report ID provided.");
         setLoading(false);
         return;
       }
 
       try {
-        // Ensure Supabase looks for the .html version.
+        // Ensure Supabase looks for the .html version
         const filenameToDownload = id.endsWith(".html") ? id : `${id}.html`;
-        console.log("Downloading report from storage:", filenameToDownload);
+        console.log("[SharedReport] Downloading from storage:", filenameToDownload);
 
-        // Match pattern: Use .download(filenameToDownload)
         const { data, error: downloadError } = await supabase.storage
           .from("reports")
           .download(filenameToDownload);
 
         if (downloadError) {
-          console.error("Download error:", downloadError);
+          console.error("[SharedReport] Download error:", downloadError);
           throw downloadError;
         }
 
         if (data) {
+          console.log("[SharedReport] Blob received, size:", data.size, "type:", data.type);
           const text = await data.text();
-          console.log("Report content downloaded successfully! Length:", text.length);
-          setHtml(text);
+          console.log("[SharedReport] HTML length:", text.length, "| First 200 chars:", text.substring(0, 200));
+
+          if (!text || text.length === 0) {
+            throw new Error("Downloaded file is empty");
+          }
+
+          // Create a blob URL — works reliably for large/complex HTML
+          const blob = new Blob([text], { type: "text/html" });
+          const url = URL.createObjectURL(blob);
+          console.log("[SharedReport] Blob URL created:", url);
+          setBlobUrl(url);
         } else {
           throw new Error("No data returned from storage");
         }
       } catch (err: any) {
-        console.error("Final error fetching report smoke:", err);
+        console.error("[SharedReport] Final error:", err);
         setError("Report not found. The link might be broken or the file may have been deleted.");
       } finally {
         setLoading(false);
@@ -51,6 +60,13 @@ const SharedReport = () => {
     };
 
     fetchReport();
+
+    // Cleanup blob URL on unmount
+    return () => {
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl);
+      }
+    };
   }, [id]);
 
   if (loading) {
@@ -82,11 +98,19 @@ const SharedReport = () => {
     );
   }
 
+  if (!blobUrl) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">No report content available.</p>
+      </div>
+    );
+  }
+
   return (
     <iframe
       className="w-full h-screen border-0"
       title="Shared Report"
-      srcDoc={html || ""}
+      src={blobUrl}
       sandbox="allow-scripts allow-same-origin"
     />
   );
