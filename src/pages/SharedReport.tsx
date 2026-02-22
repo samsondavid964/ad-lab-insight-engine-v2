@@ -66,21 +66,6 @@ const SharedReport = () => {
     fetchReport();
   }, [id]);
 
-  useEffect(() => {
-    if (html && !loading && iframeRef.current) {
-      console.log("Rendering shared report content into iframe...");
-      const doc = iframeRef.current.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write(html);
-        doc.close();
-        console.log("Shared report HTML injected successfully");
-      } else {
-        console.error("FAILED to access iframe contentDocument. Check sandbox permissions. 'allow-same-origin' is required for doc.write().");
-      }
-    }
-  }, [html, loading]);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -110,9 +95,11 @@ const SharedReport = () => {
     );
   }
 
+  console.log("Rendering iframe with srcdoc, length:", html?.length);
+
   return (
     <iframe
-      ref={iframeRef}
+      srcDoc={html || ""}
       className="w-full h-screen border-0"
       title="Shared Report"
       sandbox="allow-scripts allow-same-origin"
