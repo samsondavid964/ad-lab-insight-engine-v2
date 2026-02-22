@@ -22,30 +22,34 @@ const SharedReport = () => {
       }
 
       try {
-        const { data, error: downloadError } = await supabase.storage
-          .from("reports")
-          .download(id);
+        console.log("Fetching report via public URL for ID:", id);
+        const { data: { publicUrl } } = supabase.storage.from("reports").getPublicUrl(id);
 
-        if (downloadError) {
-          console.error("Supabase storage download error:", downloadError);
-          setError(`Report not found or could not be loaded. (${downloadError.message})`);
-          setLoading(false);
-          return;
+        console.log("Public URL:", publicUrl);
+        const response = await fetch(publicUrl);
+
+        if (!response.ok) {
+          // If not found, try with .html extension
+          if (response.status === 404 && !id.endsWith(".html")) {
+            console.log("Not found, trying with .html extension...");
+            const { data: { publicUrl: urlWithExt } } = supabase.storage.from("reports").getPublicUrl(`${id}.html`);
+            const retryResponse = await fetch(urlWithExt);
+
+            if (retryResponse.ok) {
+              const text = await retryResponse.text();
+              setHtml(text);
+              return;
+            }
+          }
+          throw new Error(`Failed to load report (Status ${response.status})`);
         }
 
-        if (!data) {
-          console.error("No data returned from storage for ID:", id);
-          setError("Report content is empty.");
-          setLoading(false);
-          return;
-        }
-
-        const text = await data.text();
+        const text = await response.text();
         console.log("Report downloaded successfully, length:", text.length);
         setHtml(text);
       } catch (err: any) {
-        console.error("Unexpected error fetching report:", err);
-        setError("An unexpected error occurred while loading the report.");
+        console.error("Error fetching report:", err);
+        setError("Report not found or the link might be broken.");
       } finally {
         setLoading(false);
       }

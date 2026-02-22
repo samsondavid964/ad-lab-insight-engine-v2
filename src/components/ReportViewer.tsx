@@ -97,7 +97,7 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
   const handleShare = async () => {
     setSharing(true);
     try {
-      const filename = `${businessName.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}.html`;
+      const filename = `${businessName.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}`;
       const file = new Blob([currentHtml], { type: "text/html" });
 
       const { error: uploadError } = await supabase.storage
