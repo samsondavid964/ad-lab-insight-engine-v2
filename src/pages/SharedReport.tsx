@@ -22,34 +22,42 @@ const SharedReport = () => {
       }
 
       try {
-        console.log("Fetching report via public URL for ID:", id);
-        const { data: { publicUrl } } = supabase.storage.from("reports").getPublicUrl(id);
+        console.log("Fetching report for ID:", id);
 
-        console.log("Public URL:", publicUrl);
-        const response = await fetch(publicUrl);
+        // Strategy: Try the exact ID first, then try alternatives
+        const tryFetch = async (fileId: string) => {
+          const { data: { publicUrl } } = supabase.storage.from("reports").getPublicUrl(fileId);
+          console.log(`Checking URL: ${publicUrl}`);
+          const response = await fetch(publicUrl);
+          const text = response.ok ? await response.text() : null;
+          return { response, text };
+        };
 
-        if (!response.ok) {
-          // If not found, try with .html extension
-          if (response.status === 404 && !id.endsWith(".html")) {
-            console.log("Not found, trying with .html extension...");
-            const { data: { publicUrl: urlWithExt } } = supabase.storage.from("reports").getPublicUrl(`${id}.html`);
-            const retryResponse = await fetch(urlWithExt);
+        // 1. Try exact match
+        let result = await tryFetch(id);
 
-            if (retryResponse.ok) {
-              const text = await retryResponse.text();
-              setHtml(text);
-              return;
-            }
-          }
-          throw new Error(`Failed to load report (Status ${response.status})`);
+        // 2. If not found and had no extension, try adding .html
+        if (!result.response.ok && !id.endsWith(".html")) {
+          console.log("Not found as-is, trying with .html extension...");
+          result = await tryFetch(`${id}.html`);
         }
 
-        const text = await response.text();
-        console.log("Report downloaded successfully, length:", text.length);
-        setHtml(text);
+        // 3. If not found and HAD .html, try WITHOUT it
+        if (!result.response.ok && id.endsWith(".html")) {
+          console.log("Not found with extension, trying without .html...");
+          result = await tryFetch(id.replace(".html", ""));
+        }
+
+        if (result.response.ok && result.text) {
+          console.log("Report content loaded successfully! Length:", result.text.length);
+          setHtml(result.text);
+        } else {
+          console.error("Failed to find report after trying all variations.");
+          throw new Error(`Report not found (Status ${result.response.status})`);
+        }
       } catch (err: any) {
-        console.error("Error fetching report:", err);
-        setError("Report not found or the link might be broken.");
+        console.error("Final error fetching report:", err);
+        setError("Report not found. The link might be broken or the file may have been deleted.");
       } finally {
         setLoading(false);
       }
