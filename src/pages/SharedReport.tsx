@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { X } from "lucide-react";
 
 const SharedReport = () => {
   const { id } = useParams<{ id: string }>();
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [html, setHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,21 +51,6 @@ const SharedReport = () => {
     fetchReport();
   }, [id]);
 
-  useEffect(() => {
-    if (html && !loading && iframeRef.current) {
-      console.log("Rendering shared report content into iframe via doc.write()...");
-      const doc = iframeRef.current.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write(html);
-        doc.close();
-        console.log("Shared report HTML injected successfully");
-      } else {
-        console.error("FAILED to access iframe contentDocument.");
-      }
-    }
-  }, [html, loading]);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -98,9 +82,9 @@ const SharedReport = () => {
 
   return (
     <iframe
-      ref={iframeRef}
       className="w-full h-screen border-0"
       title="Shared Report"
+      srcDoc={html || ""}
       sandbox="allow-scripts allow-same-origin"
     />
   );
