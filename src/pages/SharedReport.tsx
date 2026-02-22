@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { X } from "lucide-react";
 
 const SharedReport = () => {
   const { id } = useParams<{ id: string }>();
@@ -10,33 +11,44 @@ const SharedReport = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("SharedReport component mounted with ID:", id);
     const fetchReport = async () => {
+      console.log("Attempting to fetch shared report with ID:", id);
+
       if (!id) {
+        console.error("No report ID provided in URL");
         setError("No report ID provided.");
         setLoading(false);
         return;
       }
 
-      // Ensure we have exactly one .html extension
-      const storageKey = id.endsWith(".html") ? id : `${id}.html`;
-      console.log("Requesting storage key:", storageKey);
+      try {
+        const { data, error: downloadError } = await supabase.storage
+          .from("reports")
+          .download(id);
 
-      const { data, error: downloadError } = await supabase.storage
-        .from("reports")
-        .download(storageKey);
+        if (downloadError) {
+          console.error("Supabase storage download error:", downloadError);
+          setError(`Report not found or could not be loaded. (${downloadError.message})`);
+          setLoading(false);
+          return;
+        }
 
-      if (downloadError || !data) {
-        console.error("Supabase download error:", downloadError);
-        setError(`Storage Error: ${downloadError?.message || "Not found"}`);
+        if (!data) {
+          console.error("No data returned from storage for ID:", id);
+          setError("Report content is empty.");
+          setLoading(false);
+          return;
+        }
+
+        const text = await data.text();
+        console.log("Report downloaded successfully, length:", text.length);
+        setHtml(text);
+      } catch (err: any) {
+        console.error("Unexpected error fetching report:", err);
+        setError("An unexpected error occurred while loading the report.");
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const text = await data.text();
-      console.log("Fetched HTML length:", text.length);
-      setHtml(text);
-      setLoading(false);
     };
 
     fetchReport();
@@ -44,29 +56,25 @@ const SharedReport = () => {
 
   useEffect(() => {
     if (html && iframeRef.current) {
-      console.log("Injecting HTML into iframe...");
+      console.log("Rendering shared report content into iframe...");
       const doc = iframeRef.current.contentDocument;
       if (doc) {
-        try {
-          doc.open();
-          doc.write(html);
-          doc.close();
-          console.log("Injection complete");
-        } catch (e) {
-          console.error("Injection failed:", e);
-        }
+        doc.open();
+        doc.write(html);
+        doc.close();
+        console.log("Shared report HTML injected successfully");
       } else {
-        console.error("No contentDocument found on iframe");
+        console.error("FAILED to access iframe contentDocument. Check sandbox permissions. 'allow-same-origin' is required for doc.write().");
       }
     }
   }, [html]);
 
   if (loading) {
     return (
-      <div style={{ backgroundColor: "#0f172a", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <div className="animate-spin" style={{ width: "32px", height: "32px", border: "2px solid #3b82f6", borderBottomColor: "transparent", borderRadius: "50%" }} />
-          <span>Mounting Report Viewer...</span>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          <p className="text-sm text-muted-foreground animate-pulse">Loading report...</p>
         </div>
       </div>
     );
@@ -74,24 +82,29 @@ const SharedReport = () => {
 
   if (error) {
     return (
-      <div style={{ backgroundColor: "#0f172a", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#f87171", padding: "20px" }}>
-        <div style={{ textAlign: "center", backgroundColor: "rgba(0,0,0,0.3)", padding: "2rem", borderRadius: "1rem" }}>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>Unable to load report</h2>
-          <p style={{ color: "#94a3b8" }}>{error}</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6 text-center">
+        <div className="bg-destructive/10 p-4 rounded-full mb-4">
+          <X className="w-8 h-8 text-destructive" />
         </div>
+        <h1 className="text-xl font-semibold mb-2">Oops! Something went wrong</h1>
+        <p className="text-muted-foreground max-w-sm">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-6 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
   return (
-    <div style={{ width: "100vw", height: "100vh", backgroundColor: "white", overflow: "hidden" }}>
-      <iframe
-        ref={iframeRef}
-        style={{ width: "100%", height: "100%", border: "none" }}
-        title="Shared Report"
-        sandbox="allow-scripts allow-same-origin"
-      />
-    </div>
+    <iframe
+      ref={iframeRef}
+      className="w-full h-screen border-0"
+      title="Shared Report"
+      sandbox="allow-scripts allow-same-origin"
+    />
   );
 };
 
