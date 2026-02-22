@@ -39,42 +39,53 @@ const SharedReport = () => {
 
   useEffect(() => {
     if (html && iframeRef.current) {
-      console.log("Rendering shared report:", id);
+      console.log(`Rendering shared report: ${id}, length: ${html.length}`);
       const doc = iframeRef.current.contentDocument;
       if (doc) {
-        doc.open();
-        doc.write(html);
-        doc.close();
-        console.log("Shared report HTML injected successfully");
+        try {
+          doc.open();
+          doc.write(html);
+          doc.close();
+          console.log("Shared report HTML injected successfully");
+        } catch (e) {
+          console.error("Error writing to iframe:", e);
+        }
       } else {
-        console.error("FAILED to access iframe contentDocument. Check sandbox permissions.");
+        console.error("FAILED to access iframe contentDocument.");
       }
     }
   }, [html, id]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+          <p className="text-slate-400 text-sm">Loading shared report...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-destructive text-lg">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-900 p-6">
+        <div className="text-center">
+          <p className="text-red-400 text-lg mb-2">Error</p>
+          <p className="text-slate-500 text-sm">{error}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <iframe
-      ref={iframeRef}
-      className="w-full h-screen border-0"
-      title="Shared Report"
-      sandbox="allow-scripts allow-same-origin"
-    />
+    <div className="w-full h-screen bg-white">
+      <iframe
+        ref={iframeRef}
+        className="w-full h-full border-0"
+        title="Shared Report"
+      />
+    </div>
   );
 };
 
