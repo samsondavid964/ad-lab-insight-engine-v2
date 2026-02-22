@@ -17,11 +17,13 @@ const SharedReport = () => {
         return;
       }
 
+      console.log("Fetching report for ID:", id);
       const { data, error: downloadError } = await supabase.storage
         .from("reports")
-        .download(id);
+        .download(`${id}.html`);
 
       if (downloadError || !data) {
+        console.error("Supabase download error:", downloadError);
         setError("Report not found or could not be loaded.");
         setLoading(false);
         return;

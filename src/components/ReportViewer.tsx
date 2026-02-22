@@ -106,7 +106,7 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
 
       if (uploadError) throw uploadError;
 
-      const shareUrl = `${window.location.origin}/shared/${filename}`;
+      const shareUrl = `${window.location.origin}/shared/${filename.replace(".html", "")}`;
       await navigator.clipboard.writeText(shareUrl);
       toast.success("Link copied to clipboard!");
     } catch (err: any) {
