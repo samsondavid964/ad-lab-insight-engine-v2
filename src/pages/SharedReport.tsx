@@ -10,6 +10,7 @@ const SharedReport = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("SharedReport component mounted with ID:", id);
     const fetchReport = async () => {
       if (!id) {
         setError("No report ID provided.");
@@ -17,19 +18,23 @@ const SharedReport = () => {
         return;
       }
 
-      console.log("Fetching report for ID:", id);
+      // Ensure we have exactly one .html extension
+      const storageKey = id.endsWith(".html") ? id : `${id}.html`;
+      console.log("Requesting storage key:", storageKey);
+
       const { data, error: downloadError } = await supabase.storage
         .from("reports")
-        .download(`${id}.html`);
+        .download(storageKey);
 
       if (downloadError || !data) {
         console.error("Supabase download error:", downloadError);
-        setError("Report not found or could not be loaded.");
+        setError(`Storage Error: ${downloadError?.message || "Not found"}`);
         setLoading(false);
         return;
       }
 
       const text = await data.text();
+      console.log("Fetched HTML length:", text.length);
       setHtml(text);
       setLoading(false);
     };
@@ -39,29 +44,29 @@ const SharedReport = () => {
 
   useEffect(() => {
     if (html && iframeRef.current) {
-      console.log(`Rendering shared report: ${id}, length: ${html.length}`);
+      console.log("Injecting HTML into iframe...");
       const doc = iframeRef.current.contentDocument;
       if (doc) {
         try {
           doc.open();
           doc.write(html);
           doc.close();
-          console.log("Shared report HTML injected successfully");
+          console.log("Injection complete");
         } catch (e) {
-          console.error("Error writing to iframe:", e);
+          console.error("Injection failed:", e);
         }
       } else {
-        console.error("FAILED to access iframe contentDocument.");
+        console.error("No contentDocument found on iframe");
       }
     }
-  }, [html, id]);
+  }, [html]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
-          <p className="text-slate-400 text-sm">Loading shared report...</p>
+      <div style={{ backgroundColor: "#0f172a", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          <div className="animate-spin" style={{ width: "32px", height: "32px", border: "2px solid #3b82f6", borderBottomColor: "transparent", borderRadius: "50%" }} />
+          <span>Mounting Report Viewer...</span>
         </div>
       </div>
     );
@@ -69,21 +74,22 @@ const SharedReport = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 p-6">
-        <div className="text-center">
-          <p className="text-red-400 text-lg mb-2">Error</p>
-          <p className="text-slate-500 text-sm">{error}</p>
+      <div style={{ backgroundColor: "#0f172a", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#f87171", padding: "20px" }}>
+        <div style={{ textAlign: "center", backgroundColor: "rgba(0,0,0,0.3)", padding: "2rem", borderRadius: "1rem" }}>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>Unable to load report</h2>
+          <p style={{ color: "#94a3b8" }}>{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-screen bg-white">
+    <div style={{ width: "100vw", height: "100vh", backgroundColor: "white", overflow: "hidden" }}>
       <iframe
         ref={iframeRef}
-        className="w-full h-full border-0"
+        style={{ width: "100%", height: "100%", border: "none" }}
         title="Shared Report"
+        sandbox="allow-scripts allow-same-origin"
       />
     </div>
   );

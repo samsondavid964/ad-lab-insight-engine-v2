@@ -10,6 +10,8 @@ import NotFound from "./pages/NotFound";
 import SharedReport from "./pages/SharedReport";
 import Auth from "./pages/Auth";
 
+console.log("App bundle executing...");
+
 const queryClient = new QueryClient();
 
 const App = () => (
