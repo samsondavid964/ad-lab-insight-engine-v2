@@ -67,7 +67,7 @@ const SharedReport = () => {
   }, [id]);
 
   useEffect(() => {
-    if (html && iframeRef.current) {
+    if (html && !loading && iframeRef.current) {
       console.log("Rendering shared report content into iframe...");
       const doc = iframeRef.current.contentDocument;
       if (doc) {
@@ -79,7 +79,7 @@ const SharedReport = () => {
         console.error("FAILED to access iframe contentDocument. Check sandbox permissions. 'allow-same-origin' is required for doc.write().");
       }
     }
-  }, [html]);
+  }, [html, loading]);
 
   if (loading) {
     return (
