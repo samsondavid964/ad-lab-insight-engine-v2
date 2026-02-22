@@ -22,41 +22,27 @@ const SharedReport = () => {
       }
 
       try {
-        console.log("Fetching report for ID:", id);
+        console.log("Downloading report from storage:", id);
 
-        // Strategy: Try the exact ID first, then try alternatives
-        const tryFetch = async (fileId: string) => {
-          const { data: { publicUrl } } = supabase.storage.from("reports").getPublicUrl(fileId);
-          console.log(`Checking URL: ${publicUrl}`);
-          const response = await fetch(publicUrl);
-          const text = response.ok ? await response.text() : null;
-          return { response, text };
-        };
+        // Match pattern: Use .download(id)
+        const { data, error: downloadError } = await supabase.storage
+          .from("reports")
+          .download(id);
 
-        // 1. Try exact match
-        let result = await tryFetch(id);
-
-        // 2. If not found and had no extension, try adding .html
-        if (!result.response.ok && !id.endsWith(".html")) {
-          console.log("Not found as-is, trying with .html extension...");
-          result = await tryFetch(`${id}.html`);
+        if (downloadError) {
+          console.error("Download error:", downloadError);
+          throw downloadError;
         }
 
-        // 3. If not found and HAD .html, try WITHOUT it
-        if (!result.response.ok && id.endsWith(".html")) {
-          console.log("Not found with extension, trying without .html...");
-          result = await tryFetch(id.replace(".html", ""));
-        }
-
-        if (result.response.ok && result.text) {
-          console.log("Report content loaded successfully! Length:", result.text.length);
-          setHtml(result.text);
+        if (data) {
+          const text = await data.text();
+          console.log("Report content downloaded successfully! Length:", text.length);
+          setHtml(text);
         } else {
-          console.error("Failed to find report after trying all variations.");
-          throw new Error(`Report not found (Status ${result.response.status})`);
+          throw new Error("No data returned from storage");
         }
       } catch (err: any) {
-        console.error("Final error fetching report:", err);
+        console.error("Final error fetching report smoke:", err);
         setError("Report not found. The link might be broken or the file may have been deleted.");
       } finally {
         setLoading(false);
@@ -65,6 +51,21 @@ const SharedReport = () => {
 
     fetchReport();
   }, [id]);
+
+  useEffect(() => {
+    if (html && !loading && iframeRef.current) {
+      console.log("Rendering shared report content into iframe via doc.write()...");
+      const doc = iframeRef.current.contentDocument;
+      if (doc) {
+        doc.open();
+        doc.write(html);
+        doc.close();
+        console.log("Shared report HTML injected successfully");
+      } else {
+        console.error("FAILED to access iframe contentDocument.");
+      }
+    }
+  }, [html, loading]);
 
   if (loading) {
     return (
@@ -95,11 +96,9 @@ const SharedReport = () => {
     );
   }
 
-  console.log("Rendering iframe with srcdoc, length:", html?.length);
-
   return (
     <iframe
-      srcDoc={html || ""}
+      ref={iframeRef}
       className="w-full h-screen border-0"
       title="Shared Report"
       sandbox="allow-scripts allow-same-origin"
