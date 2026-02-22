@@ -115,27 +115,30 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Toolbar */}
-      <div className="bg-navy text-white px-6 py-4 flex items-center justify-between shadow-lg">
-        <h2 className="font-display text-lg font-semibold text-white">
-          Report: {businessName}
+      <div className="viewer-toolbar text-white px-6 py-3 flex items-center justify-between">
+        <h2 className="font-display text-base font-semibold text-white/90 truncate">
+          Report: <span className="text-blue-300">{businessName}</span>
         </h2>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-2">
           {editMode ? (
             <>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setStyleEditorOpen(true)}
-                className="border border-white/30 text-white hover:bg-white/10"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
+                title="Edit styles"
               >
                 <Paintbrush className="w-4 h-4 mr-2" />
                 Styles
               </Button>
+              <div className="w-px h-5 bg-white/10" />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCancelEdit}
-                className="border border-white/30 text-white hover:bg-white/10"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
+                title="Cancel editing"
               >
                 <X className="w-4 h-4 mr-2" />
                 Cancel
@@ -143,10 +146,11 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
               <Button
                 size="sm"
                 onClick={handleSave}
-                className="bg-accent hover:bg-blue-glow text-accent-foreground"
+                className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg h-8"
+                title="Save changes"
               >
                 <Save className="w-4 h-4 mr-2" />
-                Save Changes
+                Save
               </Button>
             </>
           ) : (
@@ -155,34 +159,40 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
                 variant="ghost"
                 size="sm"
                 onClick={toggleEditMode}
-                className="border border-white/30 text-white hover:bg-white/10"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
+                title="Edit report content"
               >
                 <Pencil className="w-4 h-4 mr-2" />
                 Edit
               </Button>
+              <div className="w-px h-5 bg-white/10" />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleDownload}
-                className="border border-white/30 text-white hover:bg-white/10"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
+                title="Download as HTML"
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download HTML
+                Download
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleShare}
                 disabled={sharing}
-                className="border border-white/30 text-white hover:bg-white/10"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
+                title="Share report link"
               >
                 {sharing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Share2 className="w-4 h-4 mr-2" />}
                 Share
               </Button>
+              <div className="w-px h-5 bg-white/10" />
               <Button
                 size="sm"
                 onClick={onNewReport}
-                className="bg-accent hover:bg-blue-glow text-accent-foreground"
+                className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg h-8"
+                title="Create new report"
               >
                 <PlusCircle className="w-4 h-4 mr-2" />
                 New Report
@@ -194,10 +204,10 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
 
       {/* Edit mode banner */}
       {editMode && (
-        <div className="bg-accent/10 border-b border-accent/30 px-6 py-2 flex items-center gap-4 text-sm text-accent">
-          <Pencil className="h-4 w-4" />
-          <span className="font-medium">Edit Mode:</span>
-          <span className="text-muted-foreground">Click text to edit • Click charts to modify data • Drag sections to reorder</span>
+        <div className="bg-blue-500/[0.06] border-b border-blue-500/10 px-6 py-2 flex items-center gap-3 text-sm">
+          <Pencil className="h-3.5 w-3.5 text-blue-500" />
+          <span className="font-medium text-blue-600">Edit Mode</span>
+          <span className="text-muted-foreground text-xs">Click text to edit · Click charts to modify · Drag sections to reorder</span>
         </div>
       )}
 
@@ -223,7 +233,7 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
         ref={iframeRef}
         className="flex-1 w-full border-0"
         title="Traffic Report"
-        sandbox="allow-same-origin allow-scripts"
+        sandbox="allow-scripts"
       />
     </div>
   );

@@ -67,7 +67,7 @@ const SharedReport = () => {
       ref={iframeRef}
       className="w-full h-screen border-0"
       title="Shared Report"
-      sandbox="allow-same-origin allow-scripts"
+      sandbox="allow-scripts"
     />
   );
 };

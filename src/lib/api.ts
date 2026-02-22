@@ -1,5 +1,6 @@
 const INITIATE_URL = "https://ad-lab.app.n8n.cloud/webhook/initiate-report";
 const POLL_URL = "https://ad-lab.app.n8n.cloud/webhook/poll-for-completion";
+const WEBHOOK_KEY = import.meta.env.VITE_WEBHOOK_KEY || "";
 
 export function generateJobId(): string {
   let id = "";
@@ -25,7 +26,10 @@ export interface PollResponse {
 export async function initiateReport(payload: InitiatePayload): Promise<void> {
   const res = await fetch(INITIATE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${WEBHOOK_KEY}`
+    },
     body: JSON.stringify(payload),
   });
 
@@ -34,7 +38,11 @@ export async function initiateReport(payload: InitiatePayload): Promise<void> {
   }
 }
 export async function pollForCompletion(jobId: string): Promise<PollResponse> {
-  const res = await fetch(`${POLL_URL}?job_id=${encodeURIComponent(jobId)}`);
+  const res = await fetch(`${POLL_URL}?job_id=${encodeURIComponent(jobId)}`, {
+    headers: {
+      "Authorization": `Bearer ${WEBHOOK_KEY}`
+    }
+  });
   if (!res.ok) throw new Error(`Poll failed: ${res.status}`);
 
   const text = await res.text();

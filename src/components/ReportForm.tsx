@@ -25,6 +25,7 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientName.trim() || !googleAdsId.trim() || !startDate || !endDate) return;
+
     onSubmit({
       clientName: clientName.trim(),
       googleAdsId: googleAdsId.trim(),
