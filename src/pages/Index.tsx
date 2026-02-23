@@ -6,7 +6,7 @@ import LoadingState from "@/components/LoadingState";
 import ReportViewer from "@/components/ReportViewer";
 import ReportHistory from "@/components/ReportHistory";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Sparkles } from "lucide-react";
+import { LogOut, Sparkles, FileText, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { initiateReport, pollForCompletion, generateJobId } from "@/lib/api";
 import {
@@ -16,11 +16,12 @@ import {
   ReportHistoryEntry
 } from "@/lib/report-history";
 
-type AppState = "form" | "loading" | "report";
+type AppState = "dashboard" | "weekly_form" | "audit_form" | "loading" | "report";
 
 const Index = () => {
   const { signOut, user } = useAuth();
-  const [state, setState] = useState<AppState>("form");
+  const [state, setState] = useState<AppState>("dashboard");
+  const [currentReportType, setCurrentReportType] = useState<"weekly" | "audit">("weekly");
   const [clientName, setClientName] = useState("");
   const [reportHtml, setReportHtml] = useState("");
   const [history, setHistory] = useState<ReportHistoryEntry[]>([]);
@@ -81,7 +82,8 @@ const Index = () => {
         job_id,
         client_name: data.clientName,
         google_ads_id: data.googleAdsId,
-        date_range: { start: data.startDate, end: data.endDate }
+        date_range: { start: data.startDate, end: data.endDate },
+        reportType: currentReportType,
       });
 
       // Refresh history to show our new pending job
@@ -98,7 +100,7 @@ const Index = () => {
         pollRef.current = setInterval(async () => {
           attempts++;
           try {
-            const result = await pollForCompletion(job_id);
+            const result = await pollForCompletion(job_id, currentReportType);
 
             if (result.status === "complete" && result.html) {
               cleanup();
@@ -112,13 +114,13 @@ const Index = () => {
               cleanup();
               await updateReport(job_id, { status: "error" });
               await refreshHistory();
-              setState("form");
+              setState(currentReportType === "weekly" ? "weekly_form" : "audit_form");
               toast.error(result.error || "Report generation failed. Please try again.");
             } else if (attempts >= maxAttempts) {
               cleanup();
               await updateReport(job_id, { status: "error" });
               await refreshHistory();
-              setState("form");
+              setState(currentReportType === "weekly" ? "weekly_form" : "audit_form");
               toast.error("Report generation timed out. Please try again.");
             }
           } catch {
@@ -126,14 +128,14 @@ const Index = () => {
               cleanup();
               await updateReport(job_id, { status: "error" });
               await refreshHistory();
-              setState("form");
+              setState(currentReportType === "weekly" ? "weekly_form" : "audit_form");
               toast.error("Report generation timed out. Please try again.");
             }
           }
         }, 20000);
       }, 120000);
     } catch {
-      setState("form");
+      setState(currentReportType === "weekly" ? "weekly_form" : "audit_form");
       toast.error("Failed to initiate report. Please check your connection and try again.");
     }
   };
@@ -142,7 +144,7 @@ const Index = () => {
     cleanup();
     setReportHtml("");
     setClientName("");
-    setState("form");
+    setState("dashboard");
   };
 
   const handleViewHistory = (entry: ReportHistoryEntry) => {
@@ -214,12 +216,64 @@ const Index = () => {
       </header>
 
       {/* Form card overlapping the header */}
-      <main className="max-w-xl mx-auto px-6 -mt-12 pb-16 relative z-10">
+      <main className="max-w-3xl mx-auto px-6 -mt-12 pb-16 relative z-10">
         <div className="animate-slide-up">
-          <ReportForm onSubmit={handleSubmit} isLoading={state !== "form"} />
+          {state === "dashboard" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onClick={() => {
+                  setCurrentReportType("weekly");
+                  setState("weekly_form");
+                }}
+                className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner border border-blue-200/50">
+                  <Activity className="w-8 h-8 text-blue-500" />
+                </div>
+                <h3 className="font-bold text-lg text-slate-800 text-center mb-2">Weekly Performance Report</h3>
+                <p className="text-sm text-slate-500 text-center leading-relaxed">Generate a standard weekly metrics and performance analysis report.</p>
+              </button>
+
+              <button
+                onClick={() => {
+                  setCurrentReportType("audit");
+                  setState("audit_form");
+                }}
+                className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner border border-purple-200/50">
+                  <FileText className="w-8 h-8 text-purple-500" />
+                </div>
+                <h3 className="font-bold text-lg text-slate-800 text-center mb-2">Full Account Audit</h3>
+                <p className="text-sm text-slate-500 text-center leading-relaxed">Deep dive into complete account performance, structure, and identifying opportunities.</p>
+              </button>
+            </div>
+          )}
+
+          {state === "weekly_form" && (
+            <div className="max-w-xl mx-auto">
+              <ReportForm
+                onSubmit={handleSubmit}
+                isLoading={false}
+                submitLabel="Generate Report"
+                onBack={() => setState("dashboard")}
+              />
+            </div>
+          )}
+
+          {state === "audit_form" && (
+            <div className="max-w-xl mx-auto">
+              <ReportForm
+                onSubmit={handleSubmit}
+                isLoading={false}
+                submitLabel="Generate Audit"
+                onBack={() => setState("dashboard")}
+              />
+            </div>
+          )}
         </div>
-        {!historyLoading && (
-          <div className="animate-slide-up" style={{ animationDelay: "0.1s" }}>
+        {!historyLoading && state === "dashboard" && (
+          <div className="animate-slide-up mt-10" style={{ animationDelay: "0.1s" }}>
             <ReportHistory
               history={history}
               onView={handleViewHistory}

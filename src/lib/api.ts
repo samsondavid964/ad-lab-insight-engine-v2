@@ -1,5 +1,8 @@
-const INITIATE_URL = "https://ad-lab.app.n8n.cloud/webhook/initiate-report";
-const POLL_URL = "https://ad-lab.app.n8n.cloud/webhook/poll-for-completion";
+const WEEKLY_INITIATE_URL = "https://ad-lab.app.n8n.cloud/webhook/initiate-report";
+const WEEKLY_POLL_URL = "https://ad-lab.app.n8n.cloud/webhook/poll-for-completion";
+
+const AUDIT_INITIATE_URL = "https://ad-lab.app.n8n.cloud/webhook/initiate-audit";
+const AUDIT_POLL_URL = "https://ad-lab.app.n8n.cloud/webhook/poll-for--audit-completion";
 const WEBHOOK_KEY = import.meta.env.VITE_WEBHOOK_KEY || "";
 
 export function generateJobId(): string {
@@ -15,6 +18,7 @@ export interface InitiatePayload {
   client_name: string;
   google_ads_id: string;
   date_range: { start: string; end: string };
+  reportType?: "weekly" | "audit";
 }
 
 export interface PollResponse {
@@ -24,21 +28,25 @@ export interface PollResponse {
 }
 
 export async function initiateReport(payload: InitiatePayload): Promise<void> {
-  const res = await fetch(INITIATE_URL, {
+  const { reportType = "weekly", ...bodyPayload } = payload;
+  const url = reportType === "audit" ? AUDIT_INITIATE_URL : WEEKLY_INITIATE_URL;
+
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${WEBHOOK_KEY}`
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(bodyPayload),
   });
 
   if (!res.ok) {
     throw new Error(`Failed to initiate report: ${res.status}`);
   }
 }
-export async function pollForCompletion(jobId: string): Promise<PollResponse> {
-  const res = await fetch(`${POLL_URL}?job_id=${encodeURIComponent(jobId)}`, {
+export async function pollForCompletion(jobId: string, reportType: "weekly" | "audit" = "weekly"): Promise<PollResponse> {
+  const url = reportType === "audit" ? AUDIT_POLL_URL : WEEKLY_POLL_URL;
+  const res = await fetch(`${url}?job_id=${encodeURIComponent(jobId)}`, {
     headers: {
       "Authorization": `Bearer ${WEBHOOK_KEY}`
     }

@@ -14,9 +14,11 @@ import { CLIENT_NAMES } from "@/lib/clients";
 interface ReportFormProps {
   onSubmit: (data: { clientName: string; googleAdsId: string; startDate: string; endDate: string }) => void;
   isLoading: boolean;
+  submitLabel?: string;
+  onBack?: () => void;
 }
 
-const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
+const ReportForm = ({ onSubmit, isLoading, submitLabel = "Generate Report", onBack }: ReportFormProps) => {
   const [clientName, setClientName] = useState("");
   const [googleAdsId, setGoogleAdsId] = useState("");
   const [startDate, setStartDate] = useState<Date>();
@@ -138,14 +140,27 @@ const ReportForm = ({ onSubmit, isLoading }: ReportFormProps) => {
             </div>
           </div>
 
-          <Button
-            type="submit"
-            disabled={isLoading || !clientName.trim() || !googleAdsId.trim() || !startDate || !endDate}
-            className="w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
-          >
-            Generate Report
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+          <div className="flex flex-col gap-3">
+            <Button
+              type="submit"
+              disabled={isLoading || !clientName.trim() || !googleAdsId.trim() || !startDate || !endDate}
+              className="w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
+            >
+              {submitLabel}
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            {onBack && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onBack}
+                disabled={isLoading}
+                className="w-full h-14 text-lg font-semibold rounded-xl text-slate-600 hover:text-slate-900 border-slate-200 hover:bg-slate-50 transition-all duration-300"
+              >
+                Back to Options
+              </Button>
+            )}
+          </div>
         </form>
       </CardContent>
     </Card>
