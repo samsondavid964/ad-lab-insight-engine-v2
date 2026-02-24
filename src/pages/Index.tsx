@@ -181,22 +181,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header with refined dark gradient */}
-      <header className="relative overflow-hidden bg-white border-b border-slate-200">
-        {/* Animated mesh overlay - adapted for light theme */}
+      <header className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #050505 0%, #111111 40%, #1a1a1a 60%, #050505 100%)" }}>
+        {/* Animated mesh overlay - adapted for dark theme */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-brand-500/[0.04] blur-[100px] animate-[float_20s_ease-in-out_infinite]" />
           <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-purple-500/[0.03] blur-[80px] animate-[float_25s_ease-in-out_infinite_reverse]" />
           <div className="absolute top-1/2 left-1/2 w-60 h-60 rounded-full bg-cyan-500/[0.02] blur-[60px] animate-[float_18s_ease-in-out_infinite_3s]" />
         </div>
 
-        {/* Subtle grid overlay - light mode */}
+        {/* Subtle grid overlay - dark mode */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
           backgroundSize: '60px 60px'
         }} />
 
         <div className="absolute top-5 right-5 z-20">
-          <Button variant="ghost" onClick={signOut} className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 group transition-all duration-300 rounded-xl">
+          <Button variant="ghost" onClick={signOut} className="text-slate-400 hover:text-white hover:bg-white/5 group transition-all duration-300 rounded-xl">
             <LogOut className="w-4 h-4 mr-2 group-hover:translate-x-0.5 transition-transform" />
             Sign Out
           </Button>
@@ -208,17 +208,17 @@ const Index = () => {
             alt="Ad-Lab"
             className="h-20 mx-auto mb-8 rounded-2xl shadow-2xl shadow-brand-500/20 ring-1 ring-white/10" />
 
-          <h1 className="text-4xl md:text-5xl text-slate-900 mb-3 font-serif font-extrabold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-4xl md:text-5xl text-white mb-3 font-serif font-extrabold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
             Traffic Intelligence
           </h1>
-          <p className="text-slate-500 text-base max-w-lg mx-auto mb-6">
+          <p className="text-slate-400 text-base max-w-lg mx-auto mb-6">
             Generate in-depth traffic analysis reports for any client
           </p>
 
           {/* Greeting pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100/50 border border-slate-200 text-sm text-slate-600">
-            <Sparkles className="w-3.5 h-3.5 text-brand-500" />
-            Welcome back, <span className="text-slate-900 font-medium">{firstName}</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-sm text-slate-300">
+            <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+            Welcome back, <span className="text-white font-medium">{firstName}</span>
           </div>
         </div>
       </header>

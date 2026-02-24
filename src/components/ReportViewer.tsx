@@ -121,9 +121,9 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Toolbar */}
-      <div className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
-        <h2 className="font-display text-base font-semibold text-slate-800 truncate">
-          Report: <span className="text-brand-600">{businessName}</span>
+      <div className="bg-[#050505] border-b border-white/5 px-6 py-3 flex items-center justify-between">
+        <h2 className="font-display text-base font-semibold text-white/90 truncate">
+          Report: <span className="text-brand-400">{businessName}</span>
         </h2>
         <div className="flex items-center gap-2">
           {editMode ? (
@@ -132,18 +132,18 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
                 variant="ghost"
                 size="sm"
                 onClick={() => setStyleEditorOpen(true)}
-                className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg h-8"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
                 title="Edit styles"
               >
                 <Paintbrush className="w-4 h-4 mr-2" />
                 Styles
               </Button>
-              <div className="w-px h-5 bg-slate-200" />
+              <div className="w-px h-5 bg-white/10" />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCancelEdit}
-                className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg h-8"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
                 title="Cancel editing"
               >
                 <X className="w-4 h-4 mr-2" />
@@ -165,18 +165,18 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
                 variant="ghost"
                 size="sm"
                 onClick={toggleEditMode}
-                className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg h-8"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
                 title="Edit report content"
               >
                 <Pencil className="w-4 h-4 mr-2" />
                 Edit
               </Button>
-              <div className="w-px h-5 bg-slate-200" />
+              <div className="w-px h-5 bg-white/10" />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleDownload}
-                className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg h-8"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
                 title="Download as HTML"
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -187,13 +187,13 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
                 size="sm"
                 onClick={handleShare}
                 disabled={sharing}
-                className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg h-8"
+                className="text-slate-300 hover:text-white hover:bg-white/5 rounded-lg h-8"
                 title="Share report link"
               >
                 {sharing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Share2 className="w-4 h-4 mr-2" />}
                 Share
               </Button>
-              <div className="w-px h-5 bg-slate-200" />
+              <div className="w-px h-5 bg-white/10" />
               <Button
                 size="sm"
                 onClick={onNewReport}
