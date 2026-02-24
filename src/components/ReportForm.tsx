@@ -46,7 +46,7 @@ const ReportForm = ({ onSubmit, isLoading, submitLabel = "Generate Report", onBa
               Client Name
             </Label>
             <Select onValueChange={setClientName} value={clientName}>
-              <SelectTrigger className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all">
+              <SelectTrigger className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 focus:ring-brand-500/20 rounded-xl transition-all">
                 <SelectValue placeholder="Select a client" />
               </SelectTrigger>
               <SelectContent className="bg-popover z-50">
@@ -70,7 +70,7 @@ const ReportForm = ({ onSubmit, isLoading, submitLabel = "Generate Report", onBa
               placeholder="e.g. 123-456-7890"
               value={googleAdsId}
               onChange={(e) => setGoogleAdsId(e.target.value)}
-              className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all"
+              className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 focus:ring-brand-500/20 rounded-xl transition-all"
               required
               maxLength={255}
             />
@@ -144,7 +144,7 @@ const ReportForm = ({ onSubmit, isLoading, submitLabel = "Generate Report", onBa
             <Button
               type="submit"
               disabled={isLoading || !clientName.trim() || !googleAdsId.trim() || !startDate || !endDate}
-              className="w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
+              className="w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white"
             >
               {submitLabel}
               <ArrowRight className="ml-2 w-5 h-5" />

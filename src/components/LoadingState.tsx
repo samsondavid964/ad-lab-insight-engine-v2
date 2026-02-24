@@ -43,7 +43,7 @@ const LoadingState = ({ businessName, elapsedSeconds }: LoadingStateProps) => {
           <img
             src={adLabLogo}
             alt="Ad-Lab"
-            className="h-16 relative z-10 rounded-xl shadow-lg shadow-blue-500/20"
+            className="h-16 relative z-10 rounded-xl shadow-lg shadow-brand-500/20"
           />
         </div>
 
@@ -61,7 +61,7 @@ const LoadingState = ({ businessName, elapsedSeconds }: LoadingStateProps) => {
             className="h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
             style={{
               width: `${progress}%`,
-              background: "linear-gradient(90deg, hsl(213 94% 55%), hsl(213 94% 65%))"
+              background: "linear-gradient(90deg, hsl(286 79% 65%), hsl(286 79% 75%))"
             }}
           >
             <div className="absolute inset-0 animate-[progress-shimmer_2s_ease-in-out_infinite]"
@@ -87,7 +87,7 @@ const LoadingState = ({ businessName, elapsedSeconds }: LoadingStateProps) => {
               key={i}
               className="w-1.5 h-1.5 rounded-full transition-all duration-300"
               style={{
-                background: i === stageIndex ? "hsl(213 94% 55%)" : i < stageIndex ? "hsl(213 94% 55% / 0.3)" : "hsl(220 14% 85%)"
+                background: i === stageIndex ? "hsl(286 79% 65%)" : i < stageIndex ? "hsl(286 79% 65% / 0.3)" : "hsl(220 14% 85%)"
               }}
             />
           ))}

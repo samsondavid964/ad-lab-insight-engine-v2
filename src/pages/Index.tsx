@@ -6,11 +6,12 @@ import LoadingState from "@/components/LoadingState";
 import ReportViewer from "@/components/ReportViewer";
 import ReportHistory from "@/components/ReportHistory";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Sparkles, FileText, Activity } from "lucide-react";
+import { LogOut, Sparkles, FileText, Activity, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { initiateReport, pollForCompletion, generateJobId } from "@/lib/api";
 import {
   getReportHistory,
+  getAutomatedReports,
   createReport,
   updateReport,
   ReportHistoryEntry
@@ -21,10 +22,12 @@ type AppState = "dashboard" | "weekly_form" | "audit_form" | "loading" | "report
 const Index = () => {
   const { signOut, user } = useAuth();
   const [state, setState] = useState<AppState>("dashboard");
+  const [showReportTypes, setShowReportTypes] = useState(false);
   const [currentReportType, setCurrentReportType] = useState<"weekly" | "audit">("weekly");
   const [clientName, setClientName] = useState("");
   const [reportHtml, setReportHtml] = useState("");
   const [history, setHistory] = useState<ReportHistoryEntry[]>([]);
+  const [automatedHistory, setAutomatedHistory] = useState<ReportHistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [elapsed, setElapsed] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -33,8 +36,12 @@ const Index = () => {
   const currentJobIdRef = useRef<string | null>(null);
 
   const refreshHistory = useCallback(async () => {
-    const data = await getReportHistory();
+    const [data, autoData] = await Promise.all([
+      getReportHistory(),
+      getAutomatedReports()
+    ]);
     setHistory(data);
+    setAutomatedHistory(autoData);
   }, []);
 
   useEffect(() => {
@@ -74,6 +81,7 @@ const Index = () => {
         userId: user.id,
         clientName: data.clientName,
         googleAdsId: data.googleAdsId,
+        jobType: currentReportType,
         dateRange: { start: data.startDate, end: data.endDate },
       });
 
@@ -173,22 +181,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header with refined dark gradient */}
-      <header className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #080c18 0%, #0f172a 40%, #121d33 60%, #0f172a 100%)" }}>
-        {/* Animated mesh overlay */}
+      <header className="relative overflow-hidden bg-white border-b border-slate-200">
+        {/* Animated mesh overlay - adapted for light theme */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-blue-500/[0.06] blur-[100px] animate-[float_20s_ease-in-out_infinite]" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-purple-500/[0.04] blur-[80px] animate-[float_25s_ease-in-out_infinite_reverse]" />
-          <div className="absolute top-1/2 left-1/2 w-60 h-60 rounded-full bg-cyan-500/[0.03] blur-[60px] animate-[float_18s_ease-in-out_infinite_3s]" />
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-brand-500/[0.04] blur-[100px] animate-[float_20s_ease-in-out_infinite]" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-purple-500/[0.03] blur-[80px] animate-[float_25s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 w-60 h-60 rounded-full bg-cyan-500/[0.02] blur-[60px] animate-[float_18s_ease-in-out_infinite_3s]" />
         </div>
 
-        {/* Subtle grid overlay */}
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+        {/* Subtle grid overlay - light mode */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)`,
           backgroundSize: '60px 60px'
         }} />
 
         <div className="absolute top-5 right-5 z-20">
-          <Button variant="ghost" onClick={signOut} className="text-slate-400 hover:text-white hover:bg-white/5 group transition-all duration-300 rounded-xl">
+          <Button variant="ghost" onClick={signOut} className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 group transition-all duration-300 rounded-xl">
             <LogOut className="w-4 h-4 mr-2 group-hover:translate-x-0.5 transition-transform" />
             Sign Out
           </Button>
@@ -198,19 +206,19 @@ const Index = () => {
           <img
             src={adLabLogo}
             alt="Ad-Lab"
-            className="h-20 mx-auto mb-8 rounded-2xl shadow-2xl shadow-blue-500/20 ring-1 ring-white/10" />
+            className="h-20 mx-auto mb-8 rounded-2xl shadow-2xl shadow-brand-500/20 ring-1 ring-white/10" />
 
-          <h1 className="text-4xl md:text-5xl text-white mb-3 font-serif font-extrabold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-4xl md:text-5xl text-slate-900 mb-3 font-serif font-extrabold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
             Traffic Intelligence
           </h1>
-          <p className="text-blue-200/50 text-base max-w-lg mx-auto mb-6">
+          <p className="text-slate-500 text-base max-w-lg mx-auto mb-6">
             Generate in-depth traffic analysis reports for any client
           </p>
 
           {/* Greeting pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-sm text-slate-400">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            Welcome back, <span className="text-blue-300 font-medium">{firstName}</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100/50 border border-slate-200 text-sm text-slate-600">
+            <Sparkles className="w-3.5 h-3.5 text-brand-500" />
+            Welcome back, <span className="text-slate-900 font-medium">{firstName}</span>
           </div>
         </div>
       </header>
@@ -219,34 +227,56 @@ const Index = () => {
       <main className="max-w-3xl mx-auto px-6 -mt-12 pb-16 relative z-10">
         <div className="animate-slide-up">
           {state === "dashboard" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button
-                onClick={() => {
-                  setCurrentReportType("weekly");
-                  setState("weekly_form");
-                }}
-                className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
+            <div className="mb-6">
+              <Button
+                onClick={() => setShowReportTypes(!showReportTypes)}
+                variant="outline"
+                className="w-full flex items-center justify-between bg-white hover:bg-slate-50 border-slate-200 shadow-sm py-6 rounded-2xl mb-4 group hover:shadow-md transition-all duration-300"
               >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner border border-blue-200/50">
-                  <Activity className="w-8 h-8 text-blue-500" />
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center border border-brand-100 group-hover:bg-brand-100 transition-colors">
+                    <Sparkles className="w-4 h-4 text-brand-500" />
+                  </div>
+                  <span className="font-semibold text-slate-700 text-base">Generate New Report</span>
                 </div>
-                <h3 className="font-bold text-lg text-slate-800 text-center mb-2">Weekly Performance Report</h3>
-                <p className="text-sm text-slate-500 text-center leading-relaxed">Generate a standard weekly metrics and performance analysis report.</p>
-              </button>
+                {showReportTypes ? (
+                  <ChevronUp className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                )}
+              </Button>
 
-              <button
-                onClick={() => {
-                  setCurrentReportType("audit");
-                  setState("audit_form");
-                }}
-                className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner border border-purple-200/50">
-                  <FileText className="w-8 h-8 text-purple-500" />
+              {showReportTypes && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-top-2 fade-in duration-300">
+                  <button
+                    onClick={() => {
+                      setCurrentReportType("weekly");
+                      setState("weekly_form");
+                    }}
+                    className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner border border-brand-200/50">
+                      <Activity className="w-8 h-8 text-brand-500" />
+                    </div>
+                    <h3 className="font-bold text-lg text-slate-800 text-center mb-2">Weekly Performance Report</h3>
+                    <p className="text-sm text-slate-500 text-center leading-relaxed">Generate a standard weekly metrics and performance analysis report.</p>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setCurrentReportType("audit");
+                      setState("audit_form");
+                    }}
+                    className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner border border-purple-200/50">
+                      <FileText className="w-8 h-8 text-purple-500" />
+                    </div>
+                    <h3 className="font-bold text-lg text-slate-800 text-center mb-2">Full Account Audit</h3>
+                    <p className="text-sm text-slate-500 text-center leading-relaxed">Deep dive into complete account performance, structure, and identifying opportunities.</p>
+                  </button>
                 </div>
-                <h3 className="font-bold text-lg text-slate-800 text-center mb-2">Full Account Audit</h3>
-                <p className="text-sm text-slate-500 text-center leading-relaxed">Deep dive into complete account performance, structure, and identifying opportunities.</p>
-              </button>
+              )}
             </div>
           )}
 
@@ -276,6 +306,7 @@ const Index = () => {
           <div className="animate-slide-up mt-10" style={{ animationDelay: "0.1s" }}>
             <ReportHistory
               history={history}
+              automatedHistory={automatedHistory}
               onView={handleViewHistory}
               onRefresh={refreshHistory} />
           </div>

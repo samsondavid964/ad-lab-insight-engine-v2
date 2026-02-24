@@ -22,7 +22,7 @@
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 213 94% 55%;
+    --accent: 286 79% 65%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -30,15 +30,16 @@
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 213 94% 55%;
+    --ring: 286 79% 65%;
 
     --radius: 0.75rem;
 
     --navy: 222 47% 11%;
     --navy-light: 220 30% 20%;
     --navy-dark: 222 50% 7%;
-    --blue-accent: 213 94% 55%;
-    --blue-glow: 213 94% 65%;
+    --brand: 286 79% 65%;
+    --brand-accent: 286 79% 65%;
+    --brand-glow: 286 79% 75%;
     --gold: 45 93% 47%;
 
     --sidebar-background: 0 0% 98%;
@@ -64,13 +65,13 @@
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 213 94% 55%;
+    --accent: 286 79% 65%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 213 94% 55%;
+    --ring: 286 79% 65%;
   }
 }
 
@@ -117,11 +118,11 @@
 
   0%,
   100% {
-    box-shadow: 0 0 20px hsl(213 94% 55% / 0.2);
+    box-shadow: 0 0 20px hsl(286 79% 65% / 0.2);
   }
 
   50% {
-    box-shadow: 0 0 40px hsl(213 94% 55% / 0.4);
+    box-shadow: 0 0 40px hsl(286 79% 65% / 0.4);
   }
 }
 
@@ -212,7 +213,7 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent 0%, hsl(213 94% 55% / 0.1) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, hsl(286 79% 65% / 0.1) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;
 }
@@ -227,13 +228,13 @@
 
 /* ─── AUTH PAGE ────────────────────────────────────────── */
 .auth-page {
-  background: linear-gradient(135deg, #080c18 0%, #0f172a 40%, #0c1a33 70%, #080c18 100%);
+  background: #ffffff;
 }
 
 .auth-bg {
   background:
-    radial-gradient(ellipse 60% 50% at 50% 0%, hsl(213 94% 55% / 0.06), transparent),
-    radial-gradient(ellipse 40% 40% at 80% 100%, hsl(213 94% 55% / 0.04), transparent);
+    radial-gradient(ellipse 60% 50% at 50% 0%, hsl(286 79% 65% / 0.08), transparent),
+    radial-gradient(ellipse 40% 40% at 80% 100%, hsl(286 79% 65% / 0.04), transparent);
 }
 
 .auth-orb {
@@ -248,7 +249,7 @@
   height: 400px;
   top: -10%;
   left: -5%;
-  background: hsl(213 94% 55% / 0.08);
+  background: hsl(286 79% 65% / 0.15);
   animation: float 20s ease-in-out infinite;
 }
 
@@ -257,7 +258,7 @@
   height: 300px;
   bottom: -10%;
   right: -5%;
-  background: hsl(250 80% 55% / 0.06);
+  background: hsl(250 80% 65% / 0.1);
   animation: float 25s ease-in-out infinite reverse;
 }
 
@@ -266,47 +267,47 @@
   height: 200px;
   top: 40%;
   right: 20%;
-  background: hsl(180 60% 50% / 0.04);
+  background: hsl(300 60% 65% / 0.08);
   animation: float 18s ease-in-out infinite 3s;
 }
 
 .auth-card {
-  background: linear-gradient(145deg, hsl(222 47% 14% / 0.85), hsl(222 47% 10% / 0.9));
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(24px) saturate(1.5);
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
   box-shadow:
-    0 0 0 1px hsl(213 94% 55% / 0.06),
-    0 20px 60px -10px hsl(222 47% 5% / 0.6),
-    inset 0 1px 0 0 hsl(0 0% 100% / 0.04);
+    0 0 0 1px hsl(286 79% 65% / 0.1),
+    0 20px 60px -10px hsl(222 47% 5% / 0.08),
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.5);
 }
 
 .auth-input {
-  background: hsl(222 47% 11% / 0.6) !important;
-  border: 1px solid hsl(213 94% 55% / 0.1) !important;
-  color: hsl(210 40% 98%) !important;
+  background: white !important;
+  border: 1px solid hsl(214 32% 91%) !important;
+  color: hsl(222 47% 11%) !important;
   transition: all 0.2s ease;
 }
 
 .auth-input:focus {
-  border-color: hsl(213 94% 55% / 0.4) !important;
-  box-shadow: 0 0 0 3px hsl(213 94% 55% / 0.1), 0 0 20px -5px hsl(213 94% 55% / 0.15) !important;
-  background: hsl(222 47% 13% / 0.8) !important;
+  border-color: hsl(286 79% 65% / 0.5) !important;
+  box-shadow: 0 0 0 3px hsl(286 79% 65% / 0.15), 0 0 20px -5px hsl(286 79% 65% / 0.1) !important;
+  background: white !important;
 }
 
 .auth-input::placeholder {
-  color: hsl(215 20% 40%) !important;
+  color: hsl(215 20% 65%) !important;
 }
 
 .auth-btn {
-  background: linear-gradient(135deg, hsl(213 94% 50%) 0%, hsl(213 94% 58%) 100%) !important;
+  background: linear-gradient(135deg, hsl(286 79% 60%) 0%, hsl(286 79% 65%) 100%) !important;
   color: white !important;
   border: none !important;
-  box-shadow: 0 4px 15px -3px hsl(213 94% 55% / 0.4);
+  box-shadow: 0 4px 15px -3px hsl(286 79% 65% / 0.3);
   transition: all 0.3s ease !important;
 }
 
 .auth-btn:hover:not(:disabled) {
-  box-shadow: 0 6px 25px -3px hsl(213 94% 55% / 0.5) !important;
+  box-shadow: 0 6px 25px -3px hsl(286 79% 65% / 0.4) !important;
   transform: translateY(-1px);
 }
 
@@ -335,7 +336,7 @@
 .loading-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid hsl(213 94% 55% / 0.15);
+  border: 1px solid hsl(286 79% 65% / 0.15);
 }
 
 .loading-ring-1 {
@@ -361,7 +362,7 @@
   background: linear-gradient(135deg, hsl(222 47% 11% / 0.95), hsl(222 47% 14% / 0.95));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid hsl(213 94% 55% / 0.08);
+  border-bottom: 1px solid hsl(286 79% 65% / 0.08);
 }
 
 /* ─── DASHBOARD HISTORY CARD ──────────────────────────── */

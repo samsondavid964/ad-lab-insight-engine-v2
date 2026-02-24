@@ -21,7 +21,7 @@ const Auth = () => {
     const [showOtp, setShowOtp] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // If already logged in AND has correct domain, redirect to intended page or home
+    // If already logged in AND has correct domain, redire\\ct to intended page or home
     // We skip this check if they are in the password reset flow so they can actually set their new password
     if (session && !isForgotPassword) {
         const userEmail = session.user?.email || "";
@@ -207,25 +207,25 @@ const Auth = () => {
                     <img
                         src={adLabLogo}
                         alt="Ad-Lab"
-                        className="h-16 mx-auto mb-4 rounded-2xl shadow-2xl shadow-blue-500/20 ring-1 ring-white/10"
+                        className="h-16 mx-auto mb-4 rounded-2xl shadow-2xl shadow-brand-500/20 ring-1 ring-black/5"
                     />
-                    <p className="text-blue-300/60 text-sm tracking-widest uppercase font-medium">
+                    <p className="text-brand-600/80 text-sm tracking-widest uppercase font-medium">
                         Intelligence Platform
                     </p>
                 </div>
 
                 {/* Glassmorphism card */}
-                <Card className="auth-card border-white/[0.08] shadow-2xl shadow-black/40 rounded-2xl overflow-hidden">
+                <Card className="auth-card border-slate-200 shadow-xl shadow-brand-900/5 rounded-2xl overflow-hidden">
                     <CardHeader className="space-y-1 pb-4 pt-8 px-8">
                         <div className="flex items-center justify-center gap-2 mb-2">
-                            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20">
+                            <div className="p-2 rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-200">
                                 {getIcon()}
                             </div>
                         </div>
-                        <CardTitle className="text-2xl font-bold text-center text-white">
+                        <CardTitle className="text-2xl font-bold text-center text-slate-900">
                             {getTitle()}
                         </CardTitle>
-                        <CardDescription className="text-center text-slate-400">
+                        <CardDescription className="text-center text-slate-500">
                             {getDescription()}
                         </CardDescription>
                     </CardHeader>
@@ -234,7 +234,7 @@ const Auth = () => {
                             isForgotPassword && session ? (
                                 <form onSubmit={handleSetNewPassword} className="space-y-5">
                                     <div className="space-y-2">
-                                        <Label htmlFor="new-password" className="text-slate-300 text-sm font-medium">New Password</Label>
+                                        <Label htmlFor="new-password" className="text-slate-700 text-sm font-medium">New Password</Label>
                                         <Input
                                             id="new-password"
                                             type="password"
@@ -258,7 +258,7 @@ const Auth = () => {
                             ) : (
                                 <form onSubmit={handleVerifyOtp} className="space-y-5">
                                     <div className="space-y-2">
-                                        <Label htmlFor="otp" className="text-slate-300 text-sm font-medium">Verification Code</Label>
+                                        <Label htmlFor="otp" className="text-slate-700 text-sm font-medium">Verification Code</Label>
                                         <Input
                                             id="otp"
                                             type="text"
@@ -287,7 +287,7 @@ const Auth = () => {
                                                 setShowOtp(false);
                                                 if (isForgotPassword) setIsForgotPassword(false);
                                             }}
-                                            className="text-blue-400 hover:text-blue-300 transition-colors"
+                                            className="text-brand-600 hover:text-brand-500 transition-colors"
                                             disabled={isLoading}
                                         >
                                             {isForgotPassword ? "← Back to Login" : "← Back to Sign Up"}
@@ -298,7 +298,7 @@ const Auth = () => {
                         ) : isForgotPassword ? (
                             <form onSubmit={handleForgotPassword} className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label htmlFor="email" className="text-slate-300 text-sm font-medium">Work Email</Label>
+                                    <Label htmlFor="email" className="text-slate-700 text-sm font-medium">Work Email</Label>
                                     <Input
                                         id="email"
                                         type="email"
@@ -324,7 +324,7 @@ const Auth = () => {
                                     <button
                                         type="button"
                                         onClick={() => setIsForgotPassword(false)}
-                                        className="text-blue-400 hover:text-blue-300 transition-colors"
+                                        className="text-brand-600 hover:text-brand-500 transition-colors"
                                         disabled={isLoading}
                                     >
                                         ← Back to Sign in
@@ -334,7 +334,7 @@ const Auth = () => {
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label htmlFor="email" className="text-slate-300 text-sm font-medium">Work Email</Label>
+                                    <Label htmlFor="email" className="text-slate-700 text-sm font-medium">Work Email</Label>
                                     <Input
                                         id="email"
                                         type="email"
@@ -348,12 +348,12 @@ const Auth = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label htmlFor="password" className="text-slate-300 text-sm font-medium">Password</Label>
+                                        <Label htmlFor="password" className="text-slate-700 text-sm font-medium">Password</Label>
                                         {isLogin && (
                                             <button
                                                 type="button"
                                                 onClick={() => setIsForgotPassword(true)}
-                                                className="text-xs text-blue-400/80 hover:text-blue-300 transition-colors"
+                                                className="text-xs text-brand-600/80 hover:text-brand-500 transition-colors"
                                                 tabIndex={-1}
                                             >
                                                 Forgot password?
@@ -384,7 +384,7 @@ const Auth = () => {
                                     <button
                                         type="button"
                                         onClick={() => setIsLogin(!isLogin)}
-                                        className="text-blue-400 hover:text-blue-300 transition-colors"
+                                        className="text-brand-600 hover:text-brand-500 transition-colors"
                                         disabled={isLoading}
                                     >
                                         {isLogin
@@ -398,7 +398,7 @@ const Auth = () => {
                 </Card>
 
                 {/* Footer */}
-                <p className="text-center text-[11px] text-slate-500/60 mt-6 tracking-wider">
+                <p className="text-center text-[11px] text-slate-500 mt-6 tracking-wider">
                     © {new Date().getFullYear()} Ad-Lab · Internal Use Only
                 </p>
             </div>

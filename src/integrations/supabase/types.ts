@@ -23,6 +23,7 @@ export type Database = {
           google_ads_id: string | null
           date_start: string | null
           date_end: string | null
+          job_type: string | null
           status: string
           html_content: string | null
           created_at: string
@@ -36,6 +37,7 @@ export type Database = {
           google_ads_id?: string | null
           date_start?: string | null
           date_end?: string | null
+          job_type?: string | null
           status?: string
           html_content?: string | null
           created_at?: string
@@ -49,6 +51,7 @@ export type Database = {
           google_ads_id?: string | null
           date_start?: string | null
           date_end?: string | null
+          job_type?: string | null
           status?: string
           html_content?: string | null
           created_at?: string
