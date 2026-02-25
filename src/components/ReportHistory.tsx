@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Clock, ExternalLink, Trash2, Loader2, AlertCircle,
-  CheckCircle2, Bot, CalendarDays, X
+  CheckCircle2, Bot, CalendarDays, X, Inbox
 } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { format, isToday, isYesterday, subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
@@ -64,8 +64,6 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
   const [activePreset, setActivePreset] = useState<Preset>(null);
   const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
-
-  if (history.length === 0 && automatedHistory.length === 0) return null;
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -110,14 +108,20 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
       : format(customRange.from, "MMM d, yyyy")
     : "Custom Range";
 
+  // Empty state component
+  const EmptyState = ({ message }: { message: string }) => (
+    <div className="flex flex-col items-center justify-center py-10 text-center">
+      <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mb-4 border border-brand-100/50">
+        <Inbox className="w-7 h-7 text-brand-400" />
+      </div>
+      <p className="text-sm text-slate-500 max-w-xs">{message}</p>
+    </div>
+  );
+
   const renderList = (items: ReportHistoryEntry[], emptyMsg: string) => {
     const filtered = filterByDate(items);
     if (filtered.length === 0) {
-      return (
-        <p className="text-sm text-slate-500 italic py-4">
-          {hasActiveFilter ? "No reports match the selected date filter." : emptyMsg}
-        </p>
-      );
+      return <EmptyState message={hasActiveFilter ? "No reports match the selected date filter." : emptyMsg} />;
     }
 
     return (
@@ -125,16 +129,16 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
         {filtered.map((entry, i) => (
           <Card
             key={entry.id}
-            className="history-card border-slate-200/80 bg-white rounded-xl overflow-hidden animate-slide-up"
+            className="overflow-hidden rounded-xl bg-white/70 backdrop-blur-sm border-l-2 border-l-brand-200 border-t border-r border-b border-t-brand-100/30 border-r-brand-100/30 border-b-brand-100/30 shadow-sm shadow-brand-500/[0.03] hover:border-l-brand-400 hover:shadow-md hover:shadow-brand-500/[0.08] hover:-translate-y-0.5 transition-all duration-300 animate-slide-up"
             style={{ animationDelay: `${i * 0.05}s` }}
           >
             <CardContent className="p-4 flex items-center justify-between">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <p className="font-semibold text-foreground truncate text-sm">{entry.clientName}</p>
+                  <p className="font-semibold text-slate-800 truncate text-sm">{entry.clientName}</p>
                   {statusBadge(entry.status)}
                 </div>
-                <p className="text-xs text-muted-foreground truncate">{entry.googleAdsId}</p>
+                <p className="text-xs text-slate-500 truncate">{entry.googleAdsId}</p>
                 <p className="text-[11px] text-slate-400 mt-1 tabular-nums">
                   {new Date(entry.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} · {entry.dateRange.start} — {entry.dateRange.end}
                 </p>
@@ -145,7 +149,7 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
                     variant="ghost"
                     size="sm"
                     onClick={() => onView(entry)}
-                    className="h-8 w-8 p-0 text-muted-foreground hover:text-accent"
+                    className="h-8 w-8 p-0 text-slate-400 hover:text-brand-600 hover:bg-brand-50/50 transition-colors"
                     title="View report"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -155,7 +159,7 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
                   variant="ghost"
                   size="sm"
                   onClick={() => setDeleteId(entry.id)}
-                  className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                  className="h-8 w-8 p-0 text-slate-400 hover:text-destructive hover:bg-red-50/50 transition-colors"
                   title="Delete report"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -171,10 +175,23 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
   const manualWeekly = history.filter(h => h.jobType === "weekly" || !h.jobType);
   const manualAudit = history.filter(h => h.jobType === "audit");
 
+  // Show empty state when no reports exist at all
+  if (history.length === 0 && automatedHistory.length === 0) {
+    return (
+      <div className="mt-10">
+        <h3 className="font-display text-xl font-semibold text-slate-800 flex items-center gap-2 mb-6">
+          <Clock className="w-5 h-5 text-brand-500" />
+          Report History
+        </h3>
+        <EmptyState message="No reports yet. Generate your first report to see it here!" />
+      </div>
+    );
+  }
+
   // Date filter bar — shared across both tabs
   const DateFilterBar = () => (
-    <div className="flex flex-wrap items-center gap-2 mb-5 p-3 bg-slate-50 rounded-xl border border-slate-100">
-      <CalendarDays className="w-4 h-4 text-slate-400 shrink-0" />
+    <div className="flex flex-wrap items-center gap-2 mb-5 p-3 bg-brand-50/30 rounded-xl border border-brand-100/40 backdrop-blur-sm">
+      <CalendarDays className="w-4 h-4 text-brand-400 shrink-0" />
       {(["today", "yesterday", "last7"] as const).map((preset) => {
         const labels = { today: "Today", yesterday: "Yesterday", last7: "Last 7 Days" };
         const isActive = activePreset === preset;
@@ -183,8 +200,8 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
             key={preset}
             onClick={() => handlePreset(preset)}
             className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${isActive
-              ? "bg-slate-800 text-white shadow-sm"
-              : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+              ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-sm shadow-brand-500/20"
+              : "bg-white/80 text-slate-600 border border-brand-100/50 hover:border-brand-200 hover:bg-white"
               }`}
           >
             {labels[preset]}
@@ -201,8 +218,8 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
               setCalendarOpen(true);
             }}
             className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${activePreset === "custom"
-              ? "bg-brand-600 text-white shadow-sm"
-              : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+              ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-sm shadow-brand-500/20"
+              : "bg-white/80 text-slate-600 border border-brand-100/50 hover:border-brand-200 hover:bg-white"
               }`}
           >
             <CalendarDays className="w-3.5 h-3.5" />
@@ -230,7 +247,7 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
       {hasActiveFilter && (
         <button
           onClick={handleClearFilter}
-          className="ml-auto text-xs font-medium px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 flex items-center gap-1 transition-all"
+          className="ml-auto text-xs font-medium px-2.5 py-1.5 rounded-lg text-brand-500 hover:text-brand-700 hover:bg-brand-50 flex items-center gap-1 transition-all"
         >
           <X className="w-3.5 h-3.5" />
           Clear
@@ -243,13 +260,14 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
     <div className="mt-10">
       <Tabs defaultValue="recent" className="w-full">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-display text-xl font-semibold text-foreground flex items-center gap-2">
-            <Clock className="w-5 h-5 text-accent" />
+          <h3 className="font-display text-xl font-semibold text-slate-800 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-brand-500" />
             Report History
+            <div className="h-0.5 w-8 bg-gradient-to-r from-brand-400 to-transparent rounded-full ml-1" />
           </h3>
-          <TabsList className="bg-slate-100/80">
-            <TabsTrigger value="recent" className="text-sm">Recent</TabsTrigger>
-            <TabsTrigger value="automated" className="text-sm gap-1.5 flex items-center">
+          <TabsList className="bg-brand-50/50 border border-brand-100/40">
+            <TabsTrigger value="recent" className="text-sm data-[state=active]:bg-white data-[state=active]:text-brand-700 data-[state=active]:shadow-sm">Recent</TabsTrigger>
+            <TabsTrigger value="automated" className="text-sm gap-1.5 flex items-center data-[state=active]:bg-white data-[state=active]:text-brand-700 data-[state=active]:shadow-sm">
               <Bot className="w-3.5 h-3.5" />
               Automated
             </TabsTrigger>
@@ -261,10 +279,10 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
 
         <TabsContent value="recent" className="animate-in fade-in duration-300">
           <Accordion type="multiple" defaultValue={["audits", "weekly"]} className="w-full space-y-4">
-            <AccordionItem value="audits" className="border-none bg-slate-50/50 rounded-xl px-4 border border-slate-100 data-[state=open]:shadow-sm transition-all pb-1">
+            <AccordionItem value="audits" className="border-none bg-white/50 backdrop-blur-sm rounded-xl px-4 border border-brand-100/30 data-[state=open]:shadow-sm data-[state=open]:shadow-brand-500/[0.04] transition-all pb-1 border-l-2 border-l-brand-300">
               <AccordionTrigger className="text-sm font-semibold text-slate-700 hover:no-underline py-4">
                 Full Account Audits
-                <span className="ml-2 text-xs font-normal text-slate-500 bg-slate-200/50 px-2 py-0.5 rounded-full">
+                <span className="ml-2 text-xs font-normal text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full border border-brand-100/50">
                   {filterByDate(manualAudit).length}
                 </span>
               </AccordionTrigger>
@@ -275,10 +293,10 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="weekly" className="border-none bg-slate-50/50 rounded-xl px-4 border border-slate-100 data-[state=open]:shadow-sm transition-all pb-1">
+            <AccordionItem value="weekly" className="border-none bg-white/50 backdrop-blur-sm rounded-xl px-4 border border-brand-100/30 data-[state=open]:shadow-sm data-[state=open]:shadow-brand-500/[0.04] transition-all pb-1 border-l-2 border-l-brand-300">
               <AccordionTrigger className="text-sm font-semibold text-slate-700 hover:no-underline py-4">
                 Weekly Performance Reports
-                <span className="ml-2 text-xs font-normal text-slate-500 bg-slate-200/50 px-2 py-0.5 rounded-full">
+                <span className="ml-2 text-xs font-normal text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full border border-brand-100/50">
                   {filterByDate(manualWeekly).length}
                 </span>
               </AccordionTrigger>
@@ -292,7 +310,7 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
         </TabsContent>
 
         <TabsContent value="automated" className="space-y-4 animate-in fade-in duration-300">
-          <div className="text-sm text-slate-500 bg-brand-50/50 p-3 rounded-lg border border-brand-100 flex items-start gap-2">
+          <div className="text-sm text-slate-600 bg-brand-50/50 p-3 rounded-lg border border-brand-100/50 flex items-start gap-2 backdrop-blur-sm">
             <Bot className="w-4 h-4 text-brand-500 mt-0.5 shrink-0" />
             <p>These reports are automatically scheduled and generated by the system. They are accessible to all team members.</p>
           </div>
@@ -327,5 +345,3 @@ const ReportHistory = ({ history, automatedHistory, onView, onRefresh }: ReportH
 };
 
 export default ReportHistory;
-
-

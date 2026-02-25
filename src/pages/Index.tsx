@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import adLabLogo from "@/assets/ad-lab-logo.png";
+import customHero from "@/assets/custom_hero.png";
 import ReportForm from "@/components/ReportForm";
 import LoadingState from "@/components/LoadingState";
 import ReportViewer from "@/components/ReportViewer";
 import ReportHistory from "@/components/ReportHistory";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Sparkles, FileText, Activity, ChevronDown, ChevronUp } from "lucide-react";
+import { LogOut, Sparkles, FileText, Activity, ChevronDown, ChevronUp, BarChart3, CalendarCheck, Clock, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { initiateReport, pollForCompletion, generateJobId } from "@/lib/api";
 import {
@@ -58,6 +59,20 @@ const Index = () => {
   }, []);
 
   useEffect(() => () => cleanup(), [cleanup]);
+
+  // Quick stats
+  const stats = useMemo(() => {
+    const all = [...history, ...automatedHistory];
+    const total = all.length;
+    const now = new Date();
+    const weekAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+    const thisWeek = all.filter(r => new Date(r.createdAt) >= weekAgo).length;
+    const lastReport = all.length > 0
+      ? new Date(all.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0].createdAt)
+        .toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+      : "—";
+    return { total, thisWeek, lastReport };
+  }, [history, automatedHistory]);
 
   const handleSubmit = async (data: {
     clientName: string;
@@ -179,120 +194,164 @@ const Index = () => {
   const firstName = user?.email?.split("@")[0] || "there";
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header with refined dark gradient */}
-      <header className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #050505 0%, #111111 40%, #1a1a1a 60%, #050505 100%)" }}>
-        {/* Animated mesh overlay - adapted for dark theme */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-brand-500/[0.04] blur-[100px] animate-[float_20s_ease-in-out_infinite]" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-purple-500/[0.03] blur-[80px] animate-[float_25s_ease-in-out_infinite_reverse]" />
-          <div className="absolute top-1/2 left-1/2 w-60 h-60 rounded-full bg-cyan-500/[0.02] blur-[60px] animate-[float_18s_ease-in-out_infinite_3s]" />
+    <div className="dashboard-page min-h-screen relative overflow-x-hidden bg-white selection:bg-brand-500/30">
+
+      {/* Top Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-brand-100/50 py-4 px-6 md:px-12 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img src={adLabLogo} alt="Ad-Lab" className="h-8 rounded-lg shadow-sm" />
+          <span className="font-bold text-slate-800 tracking-tight hidden sm:block">Intelligence Platform</span>
         </div>
 
-        {/* Subtle grid overlay - dark mode */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
-        }} />
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-sm text-brand-700">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 live-dot" />
+            Welcome back, <span className="font-semibold">{firstName}</span>
+          </div>
 
-        <div className="absolute top-5 right-5 z-20">
-          <Button variant="ghost" onClick={signOut} className="text-slate-400 hover:text-white hover:bg-white/5 group transition-all duration-300 rounded-xl">
-            <LogOut className="w-4 h-4 mr-2 group-hover:translate-x-0.5 transition-transform" />
+          <Button variant="ghost" size="icon" className="text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors">
+            <Settings className="w-5 h-5" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            onClick={signOut}
+            className="text-slate-600 hover:text-red-600 hover:bg-red-50 group transition-all duration-300 rounded-full pl-3 pr-4"
+          >
+            <LogOut className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
             Sign Out
           </Button>
         </div>
+      </nav>
 
-        <div className="relative max-w-4xl mx-auto px-6 pt-14 pb-24 text-center">
-          <img
-            src={adLabLogo}
-            alt="Ad-Lab"
-            className="h-20 mx-auto mb-8 rounded-2xl shadow-2xl shadow-brand-500/20 ring-1 ring-white/10" />
-
-          <h1 className="text-4xl md:text-5xl text-white mb-3 font-serif font-extrabold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Traffic Intelligence
-          </h1>
-          <p className="text-slate-400 text-base max-w-lg mx-auto mb-6">
-            Generate in-depth traffic analysis reports for any client
-          </p>
-
-          {/* Greeting pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-sm text-slate-300">
-            <Sparkles className="w-3.5 h-3.5 text-brand-400" />
-            Welcome back, <span className="text-white font-medium">{firstName}</span>
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-32 md:pb-48 lg:min-h-[70vh] flex items-center">
+        {/* Background Split */}
+        <div className="absolute inset-0 flex">
+          <div className="w-full lg:w-[45%] bg-white relative z-10" />
+          {/* Right side image with gradient fade on the left edge */}
+          <div className="hidden lg:block w-[55%] relative flex items-center justify-end p-8">
+            <div className="absolute inset-y-0 left-0 bg-gradient-to-r from-white via-white/100 to-transparent z-10 w-48" />
+            <img
+              src={customHero}
+              alt="Retro Data Intelligence"
+              className="w-full max-h-[75vh] object-contain object-right ml-auto relative z-0"
+            />
+            {/* Subtle overlay to fade the image slightly */}
+            <div className="absolute inset-0 bg-brand-900/5 mix-blend-overlay z-10 pointer-events-none" />
           </div>
         </div>
-      </header>
 
-      {/* Form card overlapping the header */}
-      <main className="max-w-3xl mx-auto px-6 -mt-12 pb-16 relative z-10">
-        <div className="animate-slide-up">
-          {state === "dashboard" && (
-            <div className="mb-6">
-              <Button
-                onClick={() => setShowReportTypes(!showReportTypes)}
-                variant="outline"
-                className="w-full flex items-center justify-between bg-white hover:bg-slate-50 border-slate-200 shadow-sm py-6 rounded-2xl mb-4 group hover:shadow-md transition-all duration-300"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center border border-brand-100 group-hover:bg-brand-100 transition-colors">
-                    <Sparkles className="w-4 h-4 text-brand-500" />
-                  </div>
-                  <span className="font-semibold text-slate-700 text-base">Generate New Report</span>
-                </div>
-                {showReportTypes ? (
-                  <ChevronUp className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                )}
-              </Button>
+        <div className="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-20 flex flex-col lg:flex-row items-center">
+          {/* Left Content */}
+          <div className="w-full lg:w-[50%] animate-fade-in lg:pr-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-xs font-semibold text-brand-600 tracking-wide uppercase mb-6 border border-brand-100">
+              <Sparkles className="w-3.5 h-3.5" /> Data Engine v2.0
+            </div>
+            <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 leading-[1.1] mb-6 tracking-tight">
+              Traffic <br /><span className="text-brand-600">Intelligence.</span>
+            </h1>
+            <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-lg leading-relaxed">
+              Generate in-depth, AI-powered traffic analysis and account audit reports for any client in minutes.
+            </p>
+          </div>
+        </div>
+      </section>
 
-              {showReportTypes && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-top-2 fade-in duration-300">
-                  <button
-                    onClick={() => {
-                      setCurrentReportType("weekly");
-                      setState("weekly_form");
-                    }}
-                    className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
-                  >
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner border border-brand-200/50">
-                      <Activity className="w-8 h-8 text-brand-500" />
-                    </div>
-                    <h3 className="font-bold text-lg text-slate-800 text-center mb-2">Weekly Performance Report</h3>
-                    <p className="text-sm text-slate-500 text-center leading-relaxed">Generate a standard weekly metrics and performance analysis report.</p>
-                  </button>
+      {/* Floating Action Bar */}
+      <section className="relative z-30 max-w-6xl mx-auto px-6 md:px-12 -mt-24 md:-mt-32 mb-20">
+        <div className="bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-slate-100 p-2 md:p-3 animate-slide-up flex flex-col md:flex-row items-stretch gap-3">
 
-                  <button
-                    onClick={() => {
-                      setCurrentReportType("audit");
-                      setState("audit_form");
-                    }}
-                    className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
-                  >
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner border border-purple-200/50">
-                      <FileText className="w-8 h-8 text-purple-500" />
-                    </div>
-                    <h3 className="font-bold text-lg text-slate-800 text-center mb-2">Full Account Audit</h3>
-                    <p className="text-sm text-slate-500 text-center leading-relaxed">Deep dive into complete account performance, structure, and identifying opportunities.</p>
-                  </button>
-                </div>
-              )}
+          {/* Stats Section inside Action Bar */}
+          {!historyLoading && (history.length > 0 || automatedHistory.length > 0) && (
+            <div className="flex-1 flex items-center justify-around bg-slate-50 rounded-2xl p-4 md:p-6 shadow-inner border border-slate-100/50">
+              <div className="text-center px-4">
+                <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-400 block mb-1">Total Reports</span>
+                <p className="text-2xl md:text-3xl font-black text-slate-800">{stats.total}</p>
+              </div>
+              <div className="w-px h-12 bg-slate-200" />
+              <div className="text-center px-4">
+                <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-400 block mb-1">This Week</span>
+                <p className="text-2xl md:text-3xl font-black text-brand-600">{stats.thisWeek}</p>
+              </div>
+              <div className="w-px h-12 bg-slate-200 hidden sm:block" />
+              <div className="text-center px-4 hidden sm:block">
+                <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-400 block mb-1">Last Report</span>
+                <p className="text-lg md:text-xl font-bold text-slate-800 mt-1">{stats.lastReport}</p>
+              </div>
             </div>
           )}
 
+          {/* Action Buttons Section */}
+          {state === "dashboard" && (
+            <div className="flex-[1.5] flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => {
+                  setCurrentReportType("weekly");
+                  setState("weekly_form");
+                }}
+                className="flex-1 group relative overflow-hidden bg-brand-600 hover:bg-brand-700 text-white rounded-2xl p-6 text-left transition-all duration-300 shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:-translate-y-1"
+              >
+                <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-brand-500 blur-2xl opacity-50 group-hover:bg-brand-400 transition-colors" />
+                <Activity className="w-8 h-8 text-brand-100 mb-4 relative z-10" />
+                <h3 className="font-bold text-lg mb-1 relative z-10">Weekly Report</h3>
+                <p className="text-brand-100 text-sm opacity-80 relative z-10">Standard performance metrics</p>
+              </button>
+
+              <button
+                onClick={() => {
+                  setCurrentReportType("audit");
+                  setState("audit_form");
+                }}
+                className="flex-1 group relative overflow-hidden bg-slate-900 hover:bg-slate-800 text-white rounded-2xl p-6 text-left transition-all duration-300 shadow-lg shadow-slate-900/20 hover:shadow-slate-900/30 hover:-translate-y-1"
+              >
+                <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-purple-500 blur-2xl opacity-20 group-hover:opacity-30 transition-opacity" />
+                <FileText className="w-8 h-8 text-purple-300 mb-4 relative z-10" />
+                <h3 className="font-bold text-lg mb-1 relative z-10">Account Audit</h3>
+                <p className="text-slate-400 text-sm relative z-10">Deep dive structure analysis</p>
+              </button>
+            </div>
+          )}
+
+        </div>
+      </section>
+
+      {/* Main content area (Forms & History) */}
+      <main className="relative z-10 max-w-5xl mx-auto px-6 md:px-12 pb-24">
+
+        {/* Dynamic Forms Container */}
+        <div className="animate-slide-up">
           {state === "weekly_form" && (
-            <div className="max-w-xl mx-auto">
+            <div className="max-w-xl mx-auto bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+              <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100">
+                <div className="p-2.5 bg-brand-50 rounded-xl">
+                  <Activity className="w-6 h-6 text-brand-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Weekly Performance</h2>
+                  <p className="text-sm text-slate-500">Configure report parameters</p>
+                </div>
+              </div>
               <ReportForm
                 onSubmit={handleSubmit}
                 isLoading={false}
-                submitLabel="Generate Report"
+                submitLabel="Generate Weekly Report"
                 onBack={() => setState("dashboard")}
               />
             </div>
           )}
 
           {state === "audit_form" && (
-            <div className="max-w-xl mx-auto">
+            <div className="max-w-xl mx-auto bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+              <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100">
+                <div className="p-2.5 bg-purple-50 rounded-xl">
+                  <FileText className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Full Account Audit</h2>
+                  <p className="text-sm text-slate-500">Configure audit parameters</p>
+                </div>
+              </div>
               <ReportForm
                 onSubmit={handleSubmit}
                 isLoading={false}
@@ -302,22 +361,31 @@ const Index = () => {
             </div>
           )}
         </div>
+
+        {/* History Component */}
         {!historyLoading && state === "dashboard" && (
-          <div className="animate-slide-up mt-10" style={{ animationDelay: "0.1s" }}>
+          <div className="animate-slide-up mt-8">
             <ReportHistory
               history={history}
               automatedHistory={automatedHistory}
               onView={handleViewHistory}
-              onRefresh={refreshHistory} />
+              onRefresh={refreshHistory}
+            />
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center">
-        <p className="text-xs text-slate-400/50 tracking-wider">
-          © {new Date().getFullYear()} Ad-Lab · Traffic Intelligence Platform
-        </p>
+      <footer className="bg-slate-50 border-t border-slate-200/60 pb-8 pt-12 mt-20">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <img src={adLabLogo} alt="Ad-Lab" className="h-6 grayscale opacity-60" />
+            <span className="text-sm text-slate-400 font-medium">Traffic Intelligence</span>
+          </div>
+          <p className="text-sm text-slate-400">
+            © {new Date().getFullYear()} Ad-Lab. All rights reserved.
+          </p>
+        </div>
       </footer>
     </div>
   );
