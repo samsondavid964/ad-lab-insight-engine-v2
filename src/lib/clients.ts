@@ -36,4 +36,5 @@ export const CLIENT_NAMES = [
   "mynutraessence",
   "ownmaison",
   "tufftools",
+  "ruffy",
 ] as const;
