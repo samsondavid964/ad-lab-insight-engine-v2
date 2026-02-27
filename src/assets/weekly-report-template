@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bhealth.shop — Google Ads Performance Audit</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+                        slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
+                        panel: 'rgba(255, 255, 255, 0.8)',
+                        panelBord: 'rgba(0, 0, 0, 0.06)',
+                    },
+                    backgroundImage: {
+                        'glow-gradient': 'radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.08), transparent 60%)',
+                        'danger-glow': 'radial-gradient(circle at 50% 0%, rgba(244, 63, 94, 0.08), transparent 70%)',
+                        'success-glow': 'radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08), transparent 70%)',
+                        'warn-glow': 'radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08), transparent 70%)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Hide scrollbar utility class */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        body {
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.04), transparent 35%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.03), transparent 35%);
+            background-attachment: fixed;
+            color: #0f172a;
+        }
+
+        /* Glass Panels for Light Mode */
+        .glass-panel {
+            background: var(--tw-colors-panel, rgba(255, 255, 255, 0.8));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--tw-colors-panelBord, rgba(0, 0, 0, 0.06));
+            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.04), 0 4px 16px -4px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Tab Transitions */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        .nav-tab {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #6366f1;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            box-shadow: 0 -2px 10px rgba(99, 102, 241, 0.2);
+        }
+
+        .nav-tab.active {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .nav-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        /* SVG Progress Circle */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Stat Card Hover */
+        .stat-card {
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 12px 32px -4px rgba(99, 102, 241, 0.08);
+        }
+    </style>
+</head>
+
+<body
+    class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative overflow-x-hidden">
+
+    <!-- Ambient Grid Background -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none opacity-[0.4]"
+        style="background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px); background-size: 32px 32px;">
+    </div>
+
+    <!-- Header -->
+    <header class="relative pt-12 pb-8 px-6 lg:px-12 z-10 bg-[#cb5dec] shadow-lg overflow-hidden">
+        <!-- Premium background overlay pattern -->
+        <div class="absolute inset-0 z-0 opacity-10 pointer-events-none"
+            style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 32px 32px;">
+        </div>
+        <div
+            class="absolute inset-0 z-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none">
+        </div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-brand-400/30 pb-10">
+
+                <!-- Brand & Title -->
+                <div class="animate-fade-in">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 border border-white/20 text-white shadow-sm">
+                            <i data-lucide="activity" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-white/70">Ad-Lab.io</span>
+                        <span class="text-white/30">|</span>
+                        <span class="text-xs font-semibold tracking-widest uppercase text-white">Google Ads Audit</span>
+                    </div>
+                    <h1 class="font-display text-5xl md:text-6xl font-bold tracking-tight text-white mb-6">
+                        bhealth<span class="text-white/60 font-light">.shop</span>
+                    </h1>
+
+                    <div class="flex flex-wrap gap-x-8 gap-y-4 text-sm">
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Analysis Window
+                            </p>
+                            <p class="text-white font-medium">Concluded Week <span class="text-white/70">(w/ MTD)</span>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Account ID</p>
+                            <p class="text-white font-mono">385-093-5442</p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Generated By
+                            </p>
+                            <p class="text-white font-medium flex items-center gap-2">
+                                <i data-lucide="bot" class="w-3 h-3 text-white/70"></i> Internal Tooling
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Score Gauge -->
+                <div class="bg-black/15 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl p-6 flex items-center gap-6 animate-fade-in"
+                    style="animation-delay: 0.1s;">
+                    <div>
+                        <p class="text-xs font-bold text-white uppercase tracking-widest mb-1">Account Health</p>
+                        <p class="text-sm text-white/70">Based on 40+ signals</p>
+                    </div>
+                    <div class="relative w-24 h-24 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90 absolute inset-0" viewBox="0 0 100 100">
+                            <!-- Background circle -->
+                            <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.15)" stroke-width="8"
+                                fill="none" />
+                            <!-- Progress circle -->
+                            <circle class="progress-ring__circle" cx="50" cy="50" r="42" stroke="#fbbf24"
+                                stroke-width="8" fill="none" stroke-dasharray="264" stroke-dashoffset="264"
+                                id="healthCircle" stroke-linecap="round" />
+                        </svg>
+                        <div class="text-center relative z-10 flex flex-col items-center">
+                            <span class="font-display text-3xl font-bold text-amber-400 leading-none">6.8</span>
+                            <span class="text-[10px] font-bold text-white/60 uppercase mt-1">out of 10</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Sticky Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="flex overflow-x-auto hide-scrollbar gap-8">
+                <button class="nav-tab active py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('overview')">Executive Summary</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('performance')">Campaign Performance</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('keywords')">Search Intelligence</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('technical')">Technical Audit</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap flex items-center gap-2"
+                    onclick="switchTab('action')">
+                    <i data-lucide="zap" class="w-4 h-4 text-brand-600"></i> Action Plan
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
+
+        <!-- 1. EXECUTIVE SUMMARY PANEL -->
+        <div id="panel-overview" class="tab-content active">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-brand-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Month-to-Date Metrics Overview</h2>
+            </div>
+
+            <!-- ROI Strip / Metrics Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
+                <div class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group">
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center justify-between">
+                        Total Spend <i data-lucide="wallet" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1 animate-number" data-prefix="$"
+                        data-val="18248">0</p>
+                    <p class="text-xs text-slate-400 group-hover:text-slate-500 transition-colors">375k Impressions</p>
+                </div>
+
+                <div
+                    class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group relative overflow-hidden border-emerald-100">
+                    <div
+                        class="absolute inset-0 bg-success-glow opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    </div>
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 relative flex items-center justify-between">
+                        Conversions <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1 relative animate-number"
+                        data-val="111">0</p>
+                    <p class="text-xs text-emerald-600 relative font-medium">4.11% CVR</p>
+                </div>
+
+                <div class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group">
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center justify-between">
+                        Conv Value <i data-lucide="banknote" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1 animate-number" data-prefix="$"
+                        data-val="52522">0</p>
+                    <p class="text-xs text-slate-400 group-hover:text-slate-500 transition-colors">Total Revenue</p>
+                </div>
+
+                <div class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group">
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center justify-between">
+                        Avg CPA <i data-lucide="target" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1 animate-number" data-prefix="$"
+                        data-decimals="2" data-val="164.40">0</p>
+                    <p class="text-xs text-slate-400 group-hover:text-slate-500 transition-colors">$6.76 CPC</p>
+                </div>
+
+                <div
+                    class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group relative overflow-hidden border-brand-100">
+                    <div
+                        class="absolute inset-0 bg-glow-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    </div>
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 relative flex items-center justify-between">
+                        MTD ROAS <i data-lucide="trending-up" class="w-3.5 h-3.5 opacity-40 text-brand-600"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-brand-600 mb-1 relative"><span class="animate-number"
+                            data-decimals="2" data-val="2.88">0</span>x</p>
+                    <p class="text-xs text-slate-500 relative">Overall Efficiency</p>
+                </div>
+
+                <div
+                    class="stat-card bg-rose-50 border border-rose-200 p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden group shadow-sm">
+                    <div
+                        class="absolute inset-0 bg-danger-glow opacity-50 group-hover:opacity-100 transition-opacity duration-500">
+                    </div>
+                    <p
+                        class="text-xs font-semibold text-rose-600 uppercase tracking-wider mb-3 relative flex items-center justify-between">
+                        WoW ROAS Delta <i data-lucide="trending-down" class="w-3.5 h-3.5 opacity-70"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-rose-600 mb-1 relative"><span class="animate-number"
+                            data-decimals="2" data-val="2.18">0</span>x</p>
+                    <p class="text-xs text-rose-500 relative">Down from 4.67x</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-brand-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Key Signals</h2>
+            </div>
+
+            <!-- Signals Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- Danger Signal -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-t-4 border-t-rose-500">
+                    <div
+                        class="absolute top-0 right-0 p-6 opacity-[0.03] transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="trending-down" class="w-24 h-24 text-rose-500"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span
+                            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-100 border border-rose-200 text-rose-700 text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> Critical Drop
+                        </span>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Week-over-Week ROAS Collapse</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6 relative z-10">
+                        ROAS dropped sharply from 4.67 last week down to 2.18 this week. While spend remained flat
+                        (~$6.3K to $6.4K), conversion value plummeted by over 50% ($29K to $14K).
+                    </p>
+                    <div class="mt-auto pt-4 border-t border-slate-100 relative z-10">
+                        <div class="font-display text-3xl font-bold text-rose-600 leading-none mb-1">-51.8%</div>
+                        <div class="text-xs text-slate-500">drop in WoW Conversion Value</div>
+                    </div>
+                </div>
+
+                <!-- Success Signal -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-t-4 border-t-emerald-500">
+                    <div
+                        class="absolute top-0 right-0 p-6 opacity-[0.03] transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="sparkles" class="w-24 h-24 text-emerald-500"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span
+                            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-700 text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> High Efficiency
+                        </span>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Brand Search is highly profitable
+                    </h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6 relative z-10">
+                        The SA/AE Brand Search campaign has generated $6,983 in conversion value from just $248 in MTD
+                        spend. This translates to an exceptional 28.1x ROAS. We need to ensure impression share is
+                        maximized.
+                    </p>
+                    <div class="mt-auto pt-4 border-t border-slate-100 relative z-10">
+                        <div class="font-display text-3xl font-bold text-emerald-600 leading-none mb-1">28.1x</div>
+                        <div class="text-xs text-slate-500">Return on Ad Spend (MTD)</div>
+                    </div>
+                </div>
+
+                <!-- Warning Signal -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-t-4 border-t-amber-500">
+                    <div
+                        class="absolute top-0 right-0 p-6 opacity-[0.03] transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="triangle-alert" class="w-24 h-24 text-amber-500"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span
+                            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 border border-amber-200 text-amber-700 text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Configuration
+                        </span>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Language Targeting Mismatches</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6 relative z-10">
+                        Two active PMax Prospecting campaigns (AE and SA) are currently targeting Arabic instead of
+                        English. This may be causing ad delivery to the wrong demographic subset, severely impacting
+                        efficiency.
+                    </p>
+                    <div class="mt-auto pt-4 border-t border-slate-100 relative z-10">
+                        <div class="font-display text-3xl font-bold text-amber-600 leading-none mb-1">2</div>
+                        <div class="text-xs text-slate-500">campaigns misconfigured</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 2. CAMPAIGN PERFORMANCE PANEL -->
+        <div id="panel-performance" class="tab-content">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-brand-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Spend vs Value Breakdown</h2>
+            </div>
+
+            <!-- Charts Top Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3
+                        class="text-sm font-semibold text-slate-600 uppercase tracking-widest mb-6 flex justify-between items-center">
+                        Week over Week Trend
+                        <span
+                            class="text-[10px] bg-slate-100 border border-slate-200 px-2 py-1 rounded text-slate-500">Spend
+                            vs Value</span>
+                    </h3>
+                    <div class="h-64 relative w-full"><canvas id="trendChart"></canvas></div>
+                </div>
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3
+                        class="text-sm font-semibold text-slate-600 uppercase tracking-widest mb-6 flex justify-between items-center">
+                        MTD Spend by Campaign Type
+                        <span
+                            class="text-[10px] bg-slate-100 border border-slate-200 px-2 py-1 rounded text-slate-500">Allocation</span>
+                    </h3>
+                    <div class="h-64 relative w-full flex justify-center"><canvas id="spendChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Campaign ROAS Chart -->
+            <div class="glass-panel rounded-2xl p-6 mb-8">
+                <h3
+                    class="text-sm font-semibold text-slate-600 uppercase tracking-widest mb-6 flex justify-between items-center">
+                    ROAS by Top Active Campaigns
+                    <span
+                        class="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-1 rounded font-bold">Brand
+                        Outlier Visualized</span>
+                </h3>
+                <div class="h-72 relative w-full"><canvas id="roasChart"></canvas></div>
+            </div>
+
+            <!-- Campaign Data Table -->
+            <div class="glass-panel rounded-2xl overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead
+                            class="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                            <tr>
+                                <th class="px-6 py-4">Campaign Name</th>
+                                <th class="px-6 py-4 text-right">Spend</th>
+                                <th class="px-6 py-4 text-right">Conv Value</th>
+                                <th class="px-6 py-4 text-right">ROAS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 bg-white" id="campaignTableBody">
+                            <!-- Rendered via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. KEYWORDS PANEL -->
+        <div id="panel-keywords" class="tab-content">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-brand-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Top Performing Keywords & Terms</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+                <!-- High Volume -->
+                <div class="glass-panel rounded-2xl p-6 flex flex-col">
+                    <h3
+                        class="text-sm font-semibold text-slate-600 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4 text-brand-500"></i> Highest Volume Keywords
+                    </h3>
+                    <div class="space-y-4 flex-grow">
+                        <!-- KW 1 -->
+                        <div
+                            class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center hover:border-brand-300 transition-colors">
+                            <span class="font-medium text-slate-900">"b health"</span>
+                            <div class="text-right">
+                                <span class="block font-display text-lg text-brand-600 font-bold">158</span>
+                                <span class="text-[10px] text-slate-500 uppercase tracking-widest">Impressions</span>
+                            </div>
+                        </div>
+                        <!-- KW 2 -->
+                        <div
+                            class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center hover:border-brand-300 transition-colors">
+                            <span class="font-medium text-slate-900">"b health shop"</span>
+                            <div class="text-right">
+                                <span class="block font-display text-lg text-brand-600 font-bold">142</span>
+                                <span class="text-[10px] text-slate-500 uppercase tracking-widest">Impressions</span>
+                            </div>
+                        </div>
+                        <!-- KW 3 -->
+                        <div
+                            class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center hover:border-brand-300 transition-colors opacity-70">
+                            <span class="font-medium text-slate-900">"bhealth"</span>
+                            <div class="text-right">
+                                <span class="block font-display text-lg text-brand-600 font-bold">2</span>
+                                <span class="text-[10px] text-slate-500 uppercase tracking-widest">Impressions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High Converters -->
+                <div class="glass-panel rounded-2xl p-6 flex flex-col relative overflow-hidden border-emerald-100">
+                    <div class="absolute inset-0 bg-success-glow opacity-30 pointer-events-none"></div>
+                    <h3
+                        class="text-sm font-semibold text-slate-600 uppercase tracking-widest mb-6 flex items-center gap-2 relative z-10">
+                        <i data-lucide="trophy" class="w-4 h-4 text-emerald-500"></i> Top Converting Keywords (MTD)
+                    </h3>
+                    <div class="space-y-4 relative z-10">
+
+                        <div
+                            class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 hover:bg-emerald-100/50 transition-colors shadow-sm">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-lg text-slate-900">"b health shop"</h4>
+                                <span
+                                    class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-xs font-bold">9
+                                    Conv</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4 font-mono">Ad-Lab | Search | Brand | SA/AE</p>
+                            <div class="flex items-center gap-4 text-sm">
+                                <div class="flex flex-col">
+                                    <span class="text-slate-400 text-[10px] uppercase tracking-wider font-bold">Cost /
+                                        Conv</span>
+                                    <span class="text-emerald-700 font-bold">$16.75</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white border border-slate-200 rounded-xl p-5 hover:bg-slate-50 transition-colors shadow-sm">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-lg text-slate-900">"b health"</h4>
+                                <span
+                                    class="bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded text-xs font-bold">4
+                                    Conv</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4 font-mono">Ad-Lab | Search | Brand | SA/AE</p>
+                            <div class="flex items-center gap-4 text-sm">
+                                <div class="flex flex-col">
+                                    <span class="text-slate-400 text-[10px] uppercase tracking-wider font-bold">Cost /
+                                        Conv</span>
+                                    <span class="text-slate-700 font-bold">$24.29</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Insight Box -->
+            <div
+                class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 flex gap-4 items-start relative overflow-hidden shadow-sm">
+                <div class="p-3 bg-emerald-100 rounded-xl text-emerald-600 flex-shrink-0">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-display font-bold text-lg text-emerald-800 mb-2">Search Term Waste Status</h4>
+                    <p class="text-emerald-900/80 text-sm leading-relaxed">
+                        System reports <strong class="text-emerald-900 font-semibold">no irrelevant search
+                            terms</strong> matching high-waste criteria (<= 10 clicks,> $5 CPC). Current targeting
+                            remains highly efficient regarding search queries.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. TECHNICAL AUDIT PANEL -->
+        <div id="panel-technical" class="tab-content">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-brand-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Technical Configuration Checks</h2>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden p-2 bg-white">
+
+                <!-- Checklist items -->
+                <div
+                    class="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-100">
+                    <div class="mt-1 flex-shrink-0 text-emerald-600 bg-emerald-100 p-2 rounded-lg"><i
+                            data-lucide="check" class="w-5 h-5"></i></div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">Network Settings</h4>
+                        <p class="text-sm text-slate-600">No campaigns found with Search Partners or Display Expansion
+                            improperly enabled.</p>
+                    </div>
+                </div>
+
+                <div
+                    class="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-100">
+                    <div class="mt-1 flex-shrink-0 text-emerald-600 bg-emerald-100 p-2 rounded-lg"><i
+                            data-lucide="check" class="w-5 h-5"></i></div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">Ad Rotation</h4>
+                        <p class="text-sm text-slate-600">All scanned campaigns correctly have Ad Rotation set to
+                            'OPTIMIZE'.</p>
+                    </div>
+                </div>
+
+                <div
+                    class="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-100">
+                    <div class="mt-1 flex-shrink-0 text-emerald-600 bg-emerald-100 p-2 rounded-lg"><i
+                            data-lucide="check" class="w-5 h-5"></i></div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">Targeting Leaks</h4>
+                        <p class="text-sm text-slate-600">No location targeting leaks found. Campaigns restricted
+                            appropriately.</p>
+                    </div>
+                </div>
+
+                <!-- Warning Item -->
+                <div
+                    class="flex items-start gap-4 p-4 bg-amber-50 rounded-xl transition-colors border border-amber-200 my-2 shadow-sm">
+                    <div class="mt-1 flex-shrink-0 text-amber-600 bg-amber-100 p-2 rounded-lg"><i
+                            data-lucide="triangle-alert" class="w-5 h-5"></i></div>
+                    <div>
+                        <h4 class="font-bold text-amber-800 mb-1">Language Discrepancy</h4>
+                        <p class="text-sm text-amber-700 mb-2">Found 2 campaigns targeting Arabic instead of English:
+                        </p>
+                        <ul
+                            class="space-y-1 text-xs font-mono text-amber-800 bg-white p-3 rounded-lg border border-amber-200">
+                            <li>• Ad-Lab | PMax | AE | Prospecting | MCV</li>
+                            <li>• Ad-Lab | PMax | SA | Prospecting | tROAS 3.7x</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl transition-colors">
+                    <div class="mt-1 flex-shrink-0 text-brand-600 bg-brand-100 p-2 rounded-lg"><i data-lucide="info"
+                            class="w-5 h-5"></i></div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">Ad Policy Status</h4>
+                        <p class="text-sm text-slate-600">Smart Campaign Ad (ID 538808349986) is marked as <strong
+                                class="text-slate-800 bg-slate-100 px-1 rounded border border-slate-200">APPROVED_LIMITED</strong>.
+                            Review policy details to ensure no severe reach restrictions.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 5. ACTION PLAN PANEL -->
+        <div id="panel-action" class="tab-content">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-brand-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Immediate Remediation Plan</h2>
+            </div>
+
+            <div class="space-y-6">
+
+                <!-- Action 1 -->
+                <div
+                    class="glass-panel border-rose-200 bg-white/60 rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-danger-glow opacity-30 pointer-events-none"></div>
+
+                    <div class="flex-grow relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xs font-bold tracking-widest text-rose-600 uppercase">Priority 01</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-rose-200">Critical
+                                    Impact</span>
+                                <span
+                                    class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">Immediate</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-6">Audit the PMax WoW Drop</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Investigate the specific asset groups driving the 50%
+                                    drop in conversion value WoW.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Review change history for bidding algorithm shifts or
+                                    budget reallocation.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm md:col-span-2">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Check product feed status in Merchant Center for
+                                    disapprovals causing the dip.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="lg:w-48 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8 relative z-10">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Lost Value
+                            WoW</span>
+                        <span class="font-display text-4xl font-bold text-rose-600">-$15.1K</span>
+                    </div>
+                </div>
+
+                <!-- Action 2 -->
+                <div
+                    class="glass-panel border-amber-200 bg-white/60 rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-warn-glow opacity-30 pointer-events-none"></div>
+
+                    <div class="flex-grow relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xs font-bold tracking-widest text-amber-600 uppercase">Priority 02</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-amber-200">High
+                                    Impact</span>
+                                <span
+                                    class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">24
+                                    Hours</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-6">Fix Language Targeting on
+                            Prospecting</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Update 'Ad-Lab | PMax | AE | Prospecting | MCV' to
+                                    target English (or split assets).</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Update 'Ad-Lab | PMax | SA | Prospecting | tROAS 3.7x'
+                                    to correct language constraints.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="lg:w-48 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8 relative z-10">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Affected
+                            Spend</span>
+                        <span class="font-display text-4xl font-bold text-slate-800">$7,648</span>
+                    </div>
+                </div>
+
+                <!-- Action 3 -->
+                <div
+                    class="glass-panel border-emerald-200 bg-white/60 rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-success-glow opacity-30 pointer-events-none"></div>
+
+                    <div class="flex-grow relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xs font-bold tracking-widest text-emerald-600 uppercase">Priority
+                                03</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-emerald-200">High
+                                    Impact</span>
+                                <span
+                                    class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">This
+                                    Week</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-6">Scale Brand Search</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Ensure 'Ad-Lab | Search | Brand | SA/AE' is not budget
+                                    capped (Currently 28x ROAS).</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Check Search Impression Share (IS) to verify we are
+                                    capturing 95%+ of brand queries.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="lg:w-48 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8 relative z-10">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Current
+                            ROAS</span>
+                        <span class="font-display text-4xl font-bold text-emerald-600">28.1x</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-slate-200 mt-auto py-8 bg-white/50 backdrop-blur-sm">
+        <div
+            class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <p class="text-slate-500">Generated for <strong class="text-slate-700">bhealth.shop</strong> · Google Ads
+                Audit Tool · Feb 2026</p>
+            <div class="flex items-center gap-2 text-slate-400 font-bold tracking-widest uppercase text-xs">
+                <i data-lucide="activity" class="w-4 h-4 text-brand-500"></i> Ad-Lab.io Internal
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Chart Global Defaults for Light Theme
+        Chart.defaults.color = '#64748b'; // slate-500
+        Chart.defaults.font.family = '"Plus Jakarta Sans", sans-serif';
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        Chart.defaults.plugins.tooltip.titleColor = '#0f172a';
+        Chart.defaults.plugins.tooltip.bodyColor = '#334155';
+        Chart.defaults.plugins.tooltip.borderColor = 'rgba(0,0,0,0.1)';
+        Chart.defaults.plugins.tooltip.borderWidth = 1;
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.displayColors = false;
+
+        let chartsRendered = false;
+
+        function animateNumbers() {
+            document.querySelectorAll('.animate-number').forEach(el => {
+                const val = parseFloat(el.getAttribute('data-val'));
+                const prefix = el.getAttribute('data-prefix') || '';
+                const decimals = parseInt(el.getAttribute('data-decimals') || 0);
+
+                let current = 0;
+                const duration = 1500; // ms
+                const steps = 60;
+                const stepTime = duration / steps;
+                const increment = val / steps;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= val) {
+                        current = val;
+                        clearInterval(timer);
+                    }
+                    // Format with commas
+                    let displayVal = current.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+                    el.innerText = prefix + displayVal;
+                }, stepTime);
+            });
+        }
+
+        function switchTab(tabId) {
+            // Hide all panels
+            document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+            // Remove active from all nav buttons
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+            // Activate selected
+            document.getElementById('panel-' + tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if (tabId === 'performance' && !chartsRendered) {
+                renderCharts();
+                chartsRendered = true;
+            }
+        }
+
+        function renderCharts() {
+            // 1. WoW Trend Chart (Grouped Bar)
+            new Chart(document.getElementById('trendChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Previous Week', 'Concluded Week'],
+                    datasets: [
+                        {
+                            label: 'Spend',
+                            data: [6269, 6479],
+                            backgroundColor: '#4f46e5', // brand-600
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Conversion Value',
+                            data: [29258, 14105],
+                            backgroundColor: '#10b981', // emerald-500
+                            borderRadius: 4,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: false, boxWidth: 32, padding: 20 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        },
+                        y: {
+                            type: 'linear', display: true, position: 'left',
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { callback: v => '$' + v.toLocaleString() }
+                        }
+                    }
+                }
+            });
+
+            // 2. Spend Chart (Doughnut)
+            new Chart(document.getElementById('spendChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['PMax Campaigns', 'Search Campaigns', 'Other'],
+                    datasets: [{
+                        data: [17327, 248, 673],
+                        backgroundColor: ['#6366f1', '#10b981', '#cbd5e1'], // brand, emerald, slate
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { position: 'right', labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' } },
+                        tooltip: { callbacks: { label: c => ' $' + c.parsed.toLocaleString() } }
+                    }
+                }
+            });
+
+            // 3. ROAS Bar Chart (Horizontal)
+            new Chart(document.getElementById('roasChart'), {
+                type: 'bar',
+                data: {
+                    labels: [
+                        'PMax | AE | Prospecting',
+                        'PMax | SA/AE | Competitor',
+                        'PMax | SA/AE | Remarketing',
+                        'PMax | SA | Prospecting',
+                        'Search | Brand | SA/AE'
+                    ],
+                    datasets: [{
+                        label: 'ROAS',
+                        data: [3.92, 1.71, 1.87, 1.95, 28.15],
+                        backgroundColor: (ctx) => {
+                            const val = ctx.raw;
+                            if (val > 10) return '#10b981'; // Emerald for outlier
+                            if (val > 3) return '#6366f1';  // Brand blue for good
+                            return '#f43f5e';               // Rose for poor
+                        },
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(0,0,0,0.05)', borderDash: [5, 5] },
+                            ticks: { callback: v => v + 'x' }
+                        },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Render Table Data
+            const campaigns = [
+                { name: 'Ad-Lab | PMax | AE | Prospecting | MCV', spend: 6530.10, val: 25596.06, roas: 3.92 },
+                { name: 'Ad-Lab | PMax | SA/AE | Competitor | MCV', spend: 5291.16, val: 9036.80, roas: 1.71 },
+                { name: 'Ad-Lab | PMax | SA/AE | Remarketing | MCV', spend: 4318.68, val: 8059.80, roas: 1.87 },
+                { name: 'Ad-Lab | PMax | SA | Prospecting | tROAS 3.7x', spend: 1118.47, val: 2182.46, roas: 1.95 },
+                { name: 'Ad-Lab | Search | Brand | SA/AE | TIS', spend: 248.00, val: 6983.07, roas: 28.15 },
+            ];
+
+            const tbody = document.getElementById('campaignTableBody');
+            campaigns.forEach(c => {
+                let roasColor = c.roas > 10 ? 'text-emerald-600 font-bold' : (c.roas > 3 ? 'text-brand-600' : 'text-rose-600');
+                tbody.innerHTML += `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 font-semibold text-slate-800">${c.name}</td>
+            <td class="px-6 py-4 text-right font-mono text-slate-500">$${c.spend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            <td class="px-6 py-4 text-right font-mono text-slate-500">$${c.val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            <td class="px-6 py-4 text-right font-display text-lg ${roasColor}">${c.roas}x</td>
+          </tr>
+        `;
+            });
+        }
+
+        // Trigger initial animations
+        window.addEventListener('DOMContentLoaded', () => {
+            // Small delay to let the UI paint first
+            setTimeout(() => {
+                // SVG Circle Animation
+                const circle = document.getElementById('healthCircle');
+                // Calculate offset for 68% progress on a dasharray of 264. 264 * (1 - 0.68) = 84.48
+                circle.style.strokeDashoffset = '84.48';
+
+                // Start number counting
+                animateNumbers();
+            }, 300);
+        });
+
+    </script>
+</body>
+
+</html>

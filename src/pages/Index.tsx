@@ -3,11 +3,12 @@ import { toast } from "sonner";
 import adLabLogo from "@/assets/ad-lab-logo.png";
 import customHero from "@/assets/custom_hero.png";
 import ReportForm from "@/components/ReportForm";
+import CompetitorReportForm from "@/components/CompetitorReportForm";
 import LoadingState from "@/components/LoadingState";
 import ReportViewer from "@/components/ReportViewer";
 import ReportHistory from "@/components/ReportHistory";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Sparkles, FileText, Activity, ChevronDown, ChevronUp, BarChart3, CalendarCheck, Clock, Settings, User } from "lucide-react";
+import { LogOut, Sparkles, FileText, Activity, ChevronDown, ChevronUp, BarChart3, CalendarCheck, Clock, Settings, User, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { initiateReport, pollForCompletion, generateJobId } from "@/lib/api";
 import {
@@ -18,13 +19,13 @@ import {
   ReportHistoryEntry
 } from "@/lib/report-history";
 
-type AppState = "dashboard" | "weekly_form" | "audit_form" | "loading" | "report";
+type AppState = "dashboard" | "weekly_form" | "audit_form" | "competitor_form" | "loading" | "report";
 
 const Index = () => {
   const { signOut, user } = useAuth();
   const [state, setState] = useState<AppState>("dashboard");
   const [showReportTypes, setShowReportTypes] = useState(false);
-  const [currentReportType, setCurrentReportType] = useState<"weekly" | "audit">("weekly");
+  const [currentReportType, setCurrentReportType] = useState<"weekly" | "audit" | "competitor">("weekly");
   const [clientName, setClientName] = useState("");
   const [reportHtml, setReportHtml] = useState("");
   const [history, setHistory] = useState<ReportHistoryEntry[]>([]);
@@ -73,6 +74,15 @@ const Index = () => {
       : "—";
     return { total, thisWeek, lastReport };
   }, [history, automatedHistory]);
+
+  const handleCompetitorSubmit = async (data: { clientName: string }) => {
+    await handleSubmit({
+      clientName: data.clientName,
+      googleAdsId: "N/A",
+      startDate: "1970-01-01",
+      endDate: "1970-01-01",
+    });
+  };
 
   const handleSubmit = async (data: {
     clientName: string;
@@ -137,13 +147,13 @@ const Index = () => {
               cleanup();
               await updateReport(job_id, { status: "error" });
               await refreshHistory();
-              setState(currentReportType === "weekly" ? "weekly_form" : "audit_form");
+              setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
               toast.error(result.error || "Report generation failed. Please try again.");
             } else if (attempts >= maxAttempts) {
               cleanup();
               await updateReport(job_id, { status: "error" });
               await refreshHistory();
-              setState(currentReportType === "weekly" ? "weekly_form" : "audit_form");
+              setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
               toast.error("Report generation timed out. Please try again.");
             }
           } catch {
@@ -151,14 +161,14 @@ const Index = () => {
               cleanup();
               await updateReport(job_id, { status: "error" });
               await refreshHistory();
-              setState(currentReportType === "weekly" ? "weekly_form" : "audit_form");
+              setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
               toast.error("Report generation timed out. Please try again.");
             }
           }
         }, 20000);
       }, 120000);
     } catch {
-      setState(currentReportType === "weekly" ? "weekly_form" : "audit_form");
+      setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
       toast.error("Failed to initiate report. Please check your connection and try again.");
     }
   };
@@ -310,6 +320,19 @@ const Index = () => {
                 <h3 className="font-bold text-lg mb-1 relative z-10">Account Audit</h3>
                 <p className="text-slate-400 text-sm relative z-10">Deep dive structure analysis</p>
               </button>
+
+              <button
+                onClick={() => {
+                  setCurrentReportType("competitor");
+                  setState("competitor_form");
+                }}
+                className="flex-1 group relative overflow-hidden bg-teal-700 hover:bg-teal-600 text-white rounded-2xl p-6 text-left transition-all duration-300 shadow-lg shadow-teal-700/20 hover:shadow-teal-600/30 hover:-translate-y-1"
+              >
+                <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-teal-500 blur-2xl opacity-20 group-hover:opacity-30 transition-opacity" />
+                <Search className="w-8 h-8 text-teal-200 mb-4 relative z-10" />
+                <h3 className="font-bold text-lg mb-1 relative z-10">Client Competitor Analysis</h3>
+                <p className="text-teal-200 text-sm opacity-80 relative z-10">Competitive landscape report</p>
+              </button>
             </div>
           )}
 
@@ -356,6 +379,25 @@ const Index = () => {
                 onSubmit={handleSubmit}
                 isLoading={false}
                 submitLabel="Generate Audit"
+                onBack={() => setState("dashboard")}
+              />
+            </div>
+          )}
+
+          {state === "competitor_form" && (
+            <div className="max-w-xl mx-auto bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+              <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100">
+                <div className="p-2.5 bg-teal-50 rounded-xl">
+                  <Search className="w-6 h-6 text-teal-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Client Competitor Analysis</h2>
+                  <p className="text-sm text-slate-500">Select client to analyse</p>
+                </div>
+              </div>
+              <CompetitorReportForm
+                onSubmit={handleCompetitorSubmit}
+                isLoading={false}
                 onBack={() => setState("dashboard")}
               />
             </div>

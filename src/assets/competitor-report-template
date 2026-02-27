@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restfulness — Competitor Intelligence Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        body {
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.04), transparent 35%), radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.03), transparent 35%);
+            background-attachment: fixed;
+            color: #0f172a;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.04), 0 4px 16px -4px rgba(0, 0, 0, 0.02);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .nav-tab {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #6366f1;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .nav-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px -4px rgba(99, 102, 241, 0.1);
+        }
+
+        .ad-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .ad-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.12);
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .competitor-oana {
+            --accent: #22c55e;
+            --accent-light: #f0fdf4;
+            --accent-border: #bbf7d0;
+            --accent-text: #15803d;
+        }
+
+        .competitor-iherb {
+            --accent: #f97316;
+            --accent-light: #fff7ed;
+            --accent-border: #fed7aa;
+            --accent-text: #c2410c;
+        }
+
+        .competitor-happy {
+            --accent: #8b5cf6;
+            --accent-light: #f5f3ff;
+            --accent-border: #ddd6fe;
+            --accent-text: #6d28d9;
+        }
+
+        .competitor-hnb {
+            --accent: #10b981;
+            --accent-light: #ecfdf5;
+            --accent-border: #a7f3d0;
+            --accent-text: #065f46;
+        }
+
+        .section-accent-bar {
+            width: 32px;
+            height: 3px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .img-preview {
+            background: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .img-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .img-preview:hover img {
+            transform: scale(1.04);
+        }
+
+        .ad-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 8px;
+        }
+
+        .img-preview:hover .ad-overlay {
+            opacity: 1;
+        }
+
+        .days-pill {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            backdrop-filter: blur(4px);
+        }
+
+        .yt-play {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .img-preview:hover .yt-play {
+            opacity: 1;
+        }
+
+        .yt-play-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 0, 0, 0.85);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .overview-comp-card {
+            border-left: 4px solid;
+            transition: transform 0.2s ease;
+        }
+
+        .overview-comp-card:hover {
+            transform: translateX(2px);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Ambient Grid -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none opacity-40"
+        style="background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px); background-size: 32px 32px;">
+    </div>
+
+    <!-- Header -->
+    <header class="relative pt-12 pb-8 px-6 lg:px-12 z-10 bg-[#4338ca] shadow-lg overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-10 pointer-events-none"
+            style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 32px 32px;">
+        </div>
+        <div
+            class="absolute inset-0 z-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none">
+        </div>
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-white/20 pb-10">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 border border-white/20 text-white shadow-sm">
+                            <i data-lucide="radar" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-white/70">Ad-Lab.io</span>
+                        <span class="text-white/30">|</span>
+                        <span class="text-xs font-semibold tracking-widest uppercase text-white">Competitor
+                            Intelligence</span>
+                    </div>
+                    <h1 class="font-display text-5xl md:text-6xl font-bold tracking-tight text-white mb-6">
+                        restfulness<span class="text-white/50 font-light"> — Market Scan</span>
+                    </h1>
+                    <div class="flex flex-wrap gap-x-8 gap-y-4 text-sm">
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Report Window
+                            </p>
+                            <p class="text-white font-medium">19 Feb – 26 Feb 2026</p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Competitors
+                                Tracked</p>
+                            <p class="text-white font-medium">4 brands</p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Data Sources
+                            </p>
+                            <p class="text-white font-medium flex items-center gap-2">
+                                <i data-lucide="layers" class="w-3 h-3 text-white/70"></i> Landing Pages · Google Ads ·
+                                YouTube Ads
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Market</p>
+                            <p class="text-white font-medium">Netherlands &amp; Belgium · Sleep Supplements</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Summary badge -->
+                <div
+                    class="bg-black/20 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl p-6 flex flex-col gap-3 min-w-[220px]">
+                    <p class="text-xs font-bold text-white uppercase tracking-widest mb-1">Competitors at a Glance</p>
+                    <div class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span>
+                        <span class="text-sm text-white">Oana — oanagreen.com</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-orange-400 flex-shrink-0"></span>
+                        <span class="text-sm text-white">iHerb — iherb.com</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-violet-400 flex-shrink-0"></span>
+                        <span class="text-sm text-white">HappySupps — happysupps.nl</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
+                        <span class="text-sm text-white">Holland &amp; Barrett — hollandandbarrett.nl</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="flex overflow-x-auto hide-scrollbar gap-8">
+                <button class="nav-tab active py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('overview', event)">Overview</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap flex items-center gap-1.5"
+                    onclick="switchTab('oana', event)">
+                    <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span> Oana
+                </button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap flex items-center gap-1.5"
+                    onclick="switchTab('iherb', event)">
+                    <span class="w-2 h-2 rounded-full bg-orange-400 flex-shrink-0"></span> iHerb
+                </button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap flex items-center gap-1.5"
+                    onclick="switchTab('happy', event)">
+                    <span class="w-2 h-2 rounded-full bg-violet-400 flex-shrink-0"></span> HappySupps
+                </button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap flex items-center gap-1.5"
+                    onclick="switchTab('hnb', event)">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span> Holland &amp; Barrett
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
+
+        <!-- ========== OVERVIEW TAB ========== -->
+        <div id="panel-overview" class="tab-content active">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-brand-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Competitive Landscape Overview</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                <!-- Oana -->
+                <div class="glass-panel rounded-2xl p-6 overview-comp-card" style="border-left-color: #22c55e;">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+                                <span class="font-display font-bold text-lg text-slate-900">Oana</span>
+                                <span class="text-xs text-slate-400 font-mono">oanagreen.com</span>
+                            </div>
+                            <p
+                                class="text-xs text-green-700 font-semibold bg-green-50 border border-green-200 px-2 py-0.5 rounded-full inline-block">
+                                Move to Natural BV · Netherlands &amp; Belgium</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-slate-400 uppercase font-bold">Google Ads</p>
+                            <p class="font-display font-bold text-slate-800">25 creatives</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed">"Sleep Better, Feel Better, Live Better." —
+                        Natural, melatonin-free sleep supplements. 4 primary formats: capsules, patches, oil, gummies at
+                        ~€40–50.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tag bg-green-100 text-green-700 border border-green-200">No Melatonin</span>
+                        <span class="tag bg-green-100 text-green-700 border border-green-200">Membership Model</span>
+                        <span class="tag bg-green-100 text-green-700 border border-green-200">Black Friday Promos</span>
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200">Trustpilot 4.5★</span>
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200">30K+ customers</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex gap-6 text-xs text-slate-500">
+                        <div><span class="font-bold text-slate-700">1,078</span> days — longest-running creative</div>
+                        <div><span class="font-bold text-slate-700">Active</span> refresh since Aug 2025</div>
+                        <div><span class="font-bold text-red-500">No YouTube Ads</span> found</div>
+                    </div>
+                </div>
+
+                <!-- iHerb -->
+                <div class="glass-panel rounded-2xl p-6 overview-comp-card" style="border-left-color: #f97316;">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span>
+                                <span class="font-display font-bold text-lg text-slate-900">iHerb</span>
+                                <span class="text-xs text-slate-400 font-mono">iherb.com</span>
+                            </div>
+                            <p
+                                class="text-xs text-orange-700 font-semibold bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full inline-block">
+                                iHerb, LLC · Multi-Market Global</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-slate-400 uppercase font-bold">Google Ads</p>
+                            <p class="font-display font-bold text-slate-800">33 creatives</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed">Global natural health supplement marketplace
+                        — multi-language campaigns (RU, SV, KO, NO, EN). Active promo code MYAPP15 (15% off for new
+                        customers).</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tag bg-orange-100 text-orange-700 border border-orange-200">Multi-Market</span>
+                        <span class="tag bg-orange-100 text-orange-700 border border-orange-200">MYAPP15 Promo</span>
+                        <span class="tag bg-orange-100 text-orange-700 border border-orange-200">5,000+ Products</span>
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200">1,331 day evergreen
+                            ads</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex gap-6 text-xs text-slate-500">
+                        <div><span class="font-bold text-slate-700">7</span> YouTube creatives</div>
+                        <div><span class="font-bold text-slate-700">45.9M</span> views — top creative</div>
+                        <div><span class="font-bold text-orange-500">Feb 2026 burst</span> of new ads</div>
+                    </div>
+                </div>
+
+                <!-- HappySupps -->
+                <div class="glass-panel rounded-2xl p-6 overview-comp-card" style="border-left-color: #8b5cf6;">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-2.5 h-2.5 rounded-full bg-violet-400"></span>
+                                <span class="font-display font-bold text-lg text-slate-900">HappySupps</span>
+                                <span class="text-xs text-slate-400 font-mono">happysupps.nl</span>
+                            </div>
+                            <p
+                                class="text-xs text-violet-700 font-semibold bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full inline-block">
+                                DK-Ecom bv · Netherlands</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-slate-400 uppercase font-bold">Google Ads</p>
+                            <p class="font-display font-bold text-slate-800">14 creatives</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed">"Health is happiness" — Premium nootropic
+                        (Happy Brain), sleep (Happy Sleep) &amp; hydration (Happy Electrolytes). Clinical claims,
+                        day-sachet convenience. 2+1 Free winter sale active.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tag bg-violet-100 text-violet-700 border border-violet-200">Nootropic Focus</span>
+                        <span class="tag bg-violet-100 text-violet-700 border border-violet-200">2+1 Free Promo</span>
+                        <span class="tag bg-violet-100 text-violet-700 border border-violet-200">Day Sachets</span>
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200">Trustpilot 5★ (230+
+                            reviews)</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex gap-6 text-xs text-slate-500">
+                        <div><span class="font-bold text-slate-700">3</span> YouTube creatives</div>
+                        <div><span class="font-bold text-slate-700">107K</span> total views</div>
+                        <div><span class="font-bold text-slate-700">681 days</span> longest ad run</div>
+                    </div>
+                </div>
+
+                <!-- Holland & Barrett -->
+                <div class="glass-panel rounded-2xl p-6 overview-comp-card" style="border-left-color: #10b981;">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                                <span class="font-display font-bold text-lg text-slate-900">Holland &amp; Barrett</span>
+                                <span class="text-xs text-slate-400 font-mono">hollandandbarrett.nl</span>
+                            </div>
+                            <p
+                                class="text-xs text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block">
+                                Holland &amp; Barrett B.V. · Netherlands</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-slate-400 uppercase font-bold">Google Ads</p>
+                            <p class="font-display font-bold text-slate-800">28 creatives</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed">"Specialist in natural health and care" —
+                        4,500+ SKUs, free shipping from €30. Brand-education strategy via "BreinTalk" YouTube series
+                        (sleep, nutrition, stress, movement).</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200">Authority
+                            Brand</span>
+                        <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200">BreinTalk
+                            Series</span>
+                        <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200">4,500+ SKUs</span>
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200">1,573 day evergreen
+                            ad</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex gap-6 text-xs text-slate-500">
+                        <div><span class="font-bold text-slate-700">8</span> YouTube creatives</div>
+                        <div><span class="font-bold text-slate-700">5.6M+</span> total views</div>
+                        <div><span class="font-bold text-emerald-600">Active Feb 2026</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitive Signals Table -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="h-px w-8 bg-brand-500"></div>
+                <h2 class="font-display text-xl font-semibold text-slate-900">Signal Comparison Matrix</h2>
+            </div>
+            <div class="glass-panel rounded-2xl overflow-hidden mb-10">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th
+                                    class="px-6 py-4 text-left font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Signal</th>
+                                <th
+                                    class="px-6 py-4 text-center font-semibold text-green-700 text-xs uppercase tracking-wider">
+                                    Oana</th>
+                                <th
+                                    class="px-6 py-4 text-center font-semibold text-orange-700 text-xs uppercase tracking-wider">
+                                    iHerb</th>
+                                <th
+                                    class="px-6 py-4 text-center font-semibold text-violet-700 text-xs uppercase tracking-wider">
+                                    HappySupps</th>
+                                <th
+                                    class="px-6 py-4 text-center font-semibold text-emerald-700 text-xs uppercase tracking-wider">
+                                    H&amp;B NL</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-slate-700">Active Google Ads</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-green-100 text-green-700 border border-green-200">8 active</span>
+                                </td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-orange-100 text-orange-700 border border-orange-200">33
+                                        creatives</span></td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-violet-100 text-violet-700 border border-violet-200">14
+                                        creatives</span></td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-emerald-100 text-emerald-700 border border-emerald-200">28
+                                        creatives</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-slate-700">YouTube Video Ads</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-red-100 text-red-700 border border-red-200">None found</span></td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-orange-100 text-orange-700 border border-orange-200">7
+                                        creatives</span></td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-violet-100 text-violet-700 border border-violet-200">3
+                                        creatives</span></td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-emerald-100 text-emerald-700 border border-emerald-200">8
+                                        creatives</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-slate-700">Longest-Running Ad</td>
+                                <td class="px-6 py-4 text-center font-mono text-slate-700">1,078 days</td>
+                                <td class="px-6 py-4 text-center font-mono text-slate-700">1,331 days</td>
+                                <td class="px-6 py-4 text-center font-mono text-slate-700">681 days</td>
+                                <td class="px-6 py-4 text-center font-mono text-slate-700">1,573 days</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-slate-700">Active Promotion</td>
+                                <td class="px-6 py-4 text-center text-xs text-slate-600">Membership 25% off, Black
+                                    Friday 60%</td>
+                                <td class="px-6 py-4 text-center text-xs text-slate-600">MYAPP15 (15% new customers)
+                                </td>
+                                <td class="px-6 py-4 text-center text-xs text-slate-600">2+1 Free (Winter Sale)</td>
+                                <td class="px-6 py-4 text-center text-xs text-slate-600">2nd item 50% korting</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-slate-700">Core Differentiator</td>
+                                <td class="px-6 py-4 text-center text-xs text-slate-600">No melatonin · Dutch-first</td>
+                                <td class="px-6 py-4 text-center text-xs text-slate-600">Global catalog · Multi-language
+                                </td>
+                                <td class="px-6 py-4 text-center text-xs text-slate-600">Nootropic + sleep combo</td>
+                                <td class="px-6 py-4 text-center text-xs text-slate-600">Authority brand · 4,500+ SKUs
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-slate-700">Recent Ad Refresh</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-green-100 text-green-700 border border-green-200">Aug 2025</span>
+                                </td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-orange-100 text-orange-700 border border-orange-200">Feb 11
+                                        2026</span></td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-violet-100 text-violet-700 border border-violet-200">Aug
+                                        2025</span></td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="tag bg-emerald-100 text-emerald-700 border border-emerald-200">Feb 23
+                                        2026</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== OANA TAB ========== -->
+        <div id="panel-oana" class="tab-content competitor-oana">
+
+            <!-- Brand Header -->
+            <div class="glass-panel rounded-2xl p-8 mb-8 border-t-4" style="border-top-color: #22c55e;">
+                <div class="flex flex-col md:flex-row justify-between gap-6">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-3 h-3 rounded-full bg-green-400 animate-pulse"></span>
+                            <span class="font-display font-bold text-2xl text-slate-900">Oana</span>
+                            <a href="https://oanagreen.com" target="_blank"
+                                class="text-sm text-green-700 hover:underline font-mono">oanagreen.com ↗</a>
+                        </div>
+                        <p class="text-lg text-slate-600 font-medium mb-4 italic">"Sleep Better, Feel Better, Live
+                            Better."</p>
+                        <p class="text-sm text-slate-600 leading-relaxed max-w-2xl">First Dutch company fully focused on
+                            natural sleep supplements without melatonin. Founded by Tim &amp; Giovanni. Targets adults
+                            with sleep issues, health-focused consumers, parents and entrepreneurs.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 md:justify-end items-start content-start">
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-green-700">4.5★</p>
+                            <p class="text-xs text-slate-500 mt-1">Trustpilot</p>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-green-700">30K+</p>
+                            <p class="text-xs text-slate-500 mt-1">Customers</p>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-green-700">€40–50</p>
+                            <p class="text-xs text-slate-500 mt-1">Price Range</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Products -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="font-display font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="package" class="w-4 h-4 text-green-600"></i> Core Products
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                            <span class="text-sm font-medium text-slate-700">Nacht Capsules (60st)</span>
+                            <span class="font-mono text-sm font-bold text-green-700">€49.95</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                            <span class="text-sm font-medium text-slate-700">Nacht Pleisters (28st)</span>
+                            <span class="font-mono text-sm font-bold text-green-700">€49.95</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                            <span class="text-sm font-medium text-slate-700">Nacht Olie (30ml)</span>
+                            <span class="font-mono text-sm font-bold text-green-700">€49.95</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                            <span class="text-sm font-medium text-slate-700">Nacht Gummies (60st)</span>
+                            <span class="font-mono text-sm font-bold text-green-700">€39.95</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-sm font-medium text-slate-700">Morning Coffee (new)</span>
+                            <span class="font-mono text-sm font-bold text-orange-600">25% off</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USPs -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="font-display font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-green-600"></i> Key USPs
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">100% natural, no melatonin or chemical additives</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">Vegan · gluten-free · soy-free · shellfish-free</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">Non-addictive; optimal results after 4–6 weeks</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">Rapid skin absorption claim for patches &amp; oil</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">Performance angle: sleep → energy, focus, recovery</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Promo Strategy -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="font-display font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="tag" class="w-4 h-4 text-green-600"></i> Promo &amp; Conversion
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <p class="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">Black Friday</p>
+                            <p class="text-sm text-slate-700">Up to 60% off + "3 free gifts" (€69 value)</p>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <p class="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">Membership</p>
+                            <p class="text-sm text-slate-700">Up to 25% recurring discount + always free shipping</p>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <p class="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">Morning Coffee
+                                Launch</p>
+                            <p class="text-sm text-slate-700">25% off introductory promo for new product</p>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-500 mt-2">
+                            <i data-lucide="info" class="w-3 h-3"></i>
+                            Free shipping from €39 (NL &amp; BE)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Ads Section -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="section-accent-bar bg-green-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Google Ads — 25 Creatives (Move to Natural
+                    BV)</h3>
+                <span class="tag bg-green-100 text-green-700 border border-green-200">Active through Feb 2026</span>
+            </div>
+
+            <!-- Campaign Timeline Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Evergreen Asset</p>
+                    <p class="font-display text-xl font-bold text-slate-900">1,078 days</p>
+                    <p class="text-xs text-slate-500 mt-1">Running since Mar 2023 · CR15377514…</p>
+                </div>
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Image Campaign Run</p>
+                    <p class="font-display text-xl font-bold text-slate-900">Oct 2024 → Aug 2025</p>
+                    <p class="text-xs text-slate-500 mt-1">8 image creatives · ~316–319 days</p>
+                </div>
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Current Phase</p>
+                    <p class="font-display text-xl font-bold text-green-600">Active Now</p>
+                    <p class="text-xs text-slate-500 mt-1">Refreshed Aug 2025 · 8 creatives live</p>
+                </div>
+            </div>
+
+            <!-- Ad Creative Grid -->
+            <div class="mb-4">
+                <p class="text-sm font-semibold text-slate-600 mb-4">Ad Creative Previews — Image &amp; Text Ads</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
+                    <!-- Image creatives from Oct 2024 cluster -->
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/8922619691458180539"
+                                alt="Oana Ad Creative 1"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">319d</div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Image · 300×410</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Oct 2024 → Aug 2025</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR05309834412681068545?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/1486693141768505708"
+                                alt="Oana Ad Creative 2"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">318d</div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Image · 300×410</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Oct 2024 → Aug 2025</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR01578484748538347521?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/14654310094605125451"
+                                alt="Oana Ad Creative 3"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">317d</div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Image · 300×410</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Oct 2024 → Aug 2025</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR16695811680952647681?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/2159135910660744518"
+                                alt="Oana Ad Creative 4"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">319d</div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Image · 300×484</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Oct 2024 → Aug 2025</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR08836629284324900865?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/11131243581860414721"
+                                alt="Oana Ad Creative 5"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">319d</div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Image · 300×484</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Oct 2024 → Aug 2025</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR02029596777228795905?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                    <!-- Aug 2025 refresh -->
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/4455088845032999057"
+                                alt="Oana Ad Creative 10"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">184d</div>
+                            <div class="absolute top-8 right-2">
+                                <span class="tag bg-green-500 text-white">Active</span>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Image · 300×410</p>
+                            <p class="text-xs text-green-600 mt-0.5 font-semibold">Aug 2025 → Feb 2026 ✓</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR11321669152445300737?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/15531418138598458373"
+                                alt="Oana Ad Creative 13"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">179d</div>
+                            <div class="absolute top-8 right-2">
+                                <span class="tag bg-green-500 text-white">Active</span>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Image · 300×410</p>
+                            <p class="text-xs text-green-600 mt-0.5 font-semibold">Aug 2025 → Feb 2026 ✓</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR03145575137818968065?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                    <!-- Text creatives -->
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/4459718272167495357"
+                                alt="Oana Text Ad"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">186d</div>
+                            <div class="absolute top-8 right-2">
+                                <span class="tag bg-green-500 text-white">Active</span>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Text · 380×285</p>
+                            <p class="text-xs text-green-600 mt-0.5 font-semibold">Aug 2025 → Feb 2026 ✓</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR04097609477119803393?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                    <!-- Evergreen -->
+                    <div class="ad-card glass-panel rounded-xl overflow-hidden border-2 border-green-300">
+                        <div class="img-preview h-36">
+                            <img src="https://tpc.googlesyndication.com/archive/simgad/8891851480867155056"
+                                alt="Oana Evergreen Ad"
+                                onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">1,078d</div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] font-bold text-green-700 uppercase tracking-wider">⭐ EVERGREEN · Text
+                            </p>
+                            <p class="text-xs text-green-600 mt-0.5 font-semibold">Mar 2023 → Feb 2026</p>
+                            <a href="https://adstransparency.google.com/advertiser/AR15412980317723557889/creative/CR15377514470658015233?region=anywhere&domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank"
+                                class="text-[10px] text-green-600 hover:underline mt-1 inline-flex items-center gap-1">View
+                                in ATC ↗</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- No YouTube Notice -->
+            <div class="glass-panel rounded-2xl p-6 border border-amber-200 bg-amber-50/50">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="youtube" class="w-6 h-6 text-amber-600"></i>
+                    <div>
+                        <p class="font-semibold text-slate-800">YouTube Ads — No Data Found</p>
+                        <p class="text-sm text-slate-600 mt-1">The scraper returned an empty payload for oanagreen.com
+                            YouTube ads. Oana may not be running YouTube video campaigns, or the data was not captured.
+                            Recommend manual check via <a
+                                href="https://adstransparency.google.com/advertiser/AR15412980317723557889?domain=oanagreen.com&platform=YOUTUBE"
+                                target="_blank" class="text-amber-700 underline">Google Ads Transparency</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== IHERB TAB ========== -->
+        <div id="panel-iherb" class="tab-content competitor-iherb">
+
+            <div class="glass-panel rounded-2xl p-8 mb-8 border-t-4" style="border-top-color: #f97316;">
+                <div class="flex flex-col md:flex-row justify-between gap-6">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-3 h-3 rounded-full bg-orange-400 animate-pulse"></span>
+                            <span class="font-display font-bold text-2xl text-slate-900">iHerb</span>
+                            <a href="https://iherb.com" target="_blank"
+                                class="text-sm text-orange-700 hover:underline font-mono">iherb.com ↗</a>
+                            <span class="tag bg-amber-100 text-amber-700 border border-amber-200">Landing page
+                                blocked</span>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed max-w-2xl">Global natural health &amp; wellness
+                            marketplace with multi-language advertising across Russian, Swedish, Korean, Norwegian, and
+                            English markets. Active new customer acquisition promo (MYAPP15 · 15% off). Evergreen
+                            display ads running since July 2022.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 md:justify-end items-start content-start">
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-orange-700">33</p>
+                            <p class="text-xs text-slate-500 mt-1">Google Creatives</p>
+                        </div>
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-orange-700">7</p>
+                            <p class="text-xs text-slate-500 mt-1">YouTube Ads</p>
+                        </div>
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-orange-700">45.9M</p>
+                            <p class="text-xs text-slate-500 mt-1">Top Ad Views</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YouTube Section -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="section-accent-bar bg-orange-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">YouTube Ads — 7 Creatives</h3>
+                <span class="tag bg-orange-100 text-orange-700 border border-orange-200">Multi-language</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-10">
+
+                <!-- Top performer -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border-2 border-orange-300">
+                    <a href="https://www.youtube.com/watch?v=6EziSG7W5fo" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/6EziSG7W5fo/hqdefault.jpg" alt="iHerb top YouTube ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">91d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-2 left-2"><span class="tag bg-orange-500 text-white">🔥 45.9M
+                                    Views</span></div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <p class="text-xs font-bold text-orange-700 uppercase tracking-wider mb-1">Top Performer</p>
+                        <p class="text-sm font-semibold text-slate-800">Video 6EziSG7W5fo</p>
+                        <p class="text-xs text-slate-500 mt-1">Oct 13 2025 → Feb 26 2026</p>
+                        <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                            <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i>
+                                45,927,887</span>
+                            <span class="flex items-center gap-1"><i data-lucide="thumbs-up" class="w-3 h-3"></i>
+                                61</span>
+                        </div>
+                        <a href="https://adstransparency.google.com/advertiser/AR11920289341835837441/creative/CR05788561328738140161?region=anywhere&domain=iherb.com&platform=YOUTUBE"
+                            target="_blank"
+                            class="text-[10px] text-orange-600 hover:underline mt-2 inline-flex items-center gap-1">View
+                            in ATC ↗</a>
+                    </div>
+                </div>
+
+                <!-- Korean -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=6g8PqQUTCGQ" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/6g8PqQUTCGQ/hqdefault.jpg" alt="iHerb Korean ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">113d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="tag bg-slate-100 text-slate-600 border border-slate-200">🇰🇷 Korean</span>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-800">Video 6g8PqQUTCGQ</p>
+                        <p class="text-xs text-slate-500 mt-1 italic">"5만 개 이상의 건강 상품! 4만원 이상 주문 시 무료배송"</p>
+                        <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                            <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i>
+                                363,994</span>
+                            <span class="text-slate-400">Oct 2025 → Feb 2026</span>
+                        </div>
+                        <a href="https://adstransparency.google.com/advertiser/AR11920289341835837441/creative/CR14059066214953517057?region=anywhere&domain=iherb.com&platform=YOUTUBE"
+                            target="_blank"
+                            class="text-[10px] text-orange-600 hover:underline mt-2 inline-flex items-center gap-1">View
+                            in ATC ↗</a>
+                    </div>
+                </div>
+
+                <!-- Norwegian -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=hW-R0dgF6bA" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/hW-R0dgF6bA/hqdefault.jpg" alt="iHerb Norwegian ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">119d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200 mb-1">🇳🇴 Norwegian</span>
+                        <p class="text-sm font-semibold text-slate-800 mt-1">Video hW-R0dgF6bA</p>
+                        <p class="text-xs text-slate-500 mt-1 italic">"Bli en av millioner kunder verden over som gjør
+                            velvære enkelt med iHerb."</p>
+                        <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                            <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i>
+                                30,556</span>
+                            <span class="text-slate-400">Oct 2025 → Feb 2026</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Russian - Evergreen -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=dQg8gqYfEG0" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/dQg8gqYfEG0/hqdefault.jpg" alt="iHerb Russian ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">436d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                            <div class="absolute top-8 right-2"><span
+                                    class="tag bg-orange-500 text-white">Longest</span></div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200 mb-1">🇷🇺 Russian</span>
+                        <p class="text-sm font-semibold text-slate-800 mt-1">Video dQg8gqYfEG0</p>
+                        <p class="text-xs text-slate-500 mt-1 italic">"Скидки на натуральные товары для здоровья от
+                            топ-брендов"</p>
+                        <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                            <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i>
+                                46,854</span>
+                            <span class="text-slate-400">Jun 2024 → Feb 2026</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Swedish / English MYAPP15 -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=iLu1pS-3OSs" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/iLu1pS-3OSs/hqdefault.jpg" alt="iHerb Swedish ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">16d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                            <div class="absolute top-8 right-2"><span class="tag bg-green-500 text-white">New Feb
+                                    2026</span></div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200 mb-1">🇸🇪 Swedish</span>
+                        <p class="text-sm font-semibold text-slate-800 mt-1">Video iLu1pS-3OSs</p>
+                        <p class="text-xs text-slate-500 mt-1 italic">"Nya kunder sparar 15% på produkter för hälsa.
+                            Använd kod MYAPP15"</p>
+                        <div class="bg-orange-50 border border-orange-200 rounded p-2 mt-2">
+                            <p class="text-[10px] font-bold text-orange-700">Promo Code: MYAPP15</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=xgIkaveOmG4" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/xgIkaveOmG4/hqdefault.jpg" alt="iHerb English ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">16d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                            <div class="absolute top-8 right-2"><span class="tag bg-green-500 text-white">New Feb
+                                    2026</span></div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <span class="tag bg-slate-100 text-slate-600 border border-slate-200 mb-1">🇬🇧 English</span>
+                        <p class="text-sm font-semibold text-slate-800 mt-1">Video xgIkaveOmG4</p>
+                        <p class="text-xs text-slate-500 mt-1 italic">"New customers save 15% on health and wellness
+                            products. Use code MYAPP15"</p>
+                        <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                            <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i>
+                                15,656</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Google Ads Section -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="section-accent-bar bg-orange-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Google Ads — 33 Creatives</h3>
+                <span class="tag bg-orange-100 text-orange-700 border border-orange-200">Active since 2022</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Oldest Evergreen</p>
+                    <p class="font-display text-xl font-bold text-slate-900">1,331 days</p>
+                    <p class="text-xs text-slate-500 mt-1">Running since Jul 8 2022</p>
+                </div>
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">2nd Evergreen</p>
+                    <p class="font-display text-xl font-bold text-slate-900">1,322 days</p>
+                    <p class="text-xs text-slate-500 mt-1">Running since Jul 5 2022</p>
+                </div>
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Feb 2026 Burst</p>
+                    <p class="font-display text-xl font-bold text-orange-600">11+ new ads</p>
+                    <p class="text-xs text-slate-500 mt-1">Launched Feb 19–23 2026</p>
+                </div>
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Creative Mix</p>
+                    <p class="font-display text-xl font-bold text-slate-900">26 text · 7 image</p>
+                    <p class="text-xs text-slate-500 mt-1">Multiple banner sizes</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border-2 border-orange-300">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/8319734372012333939"
+                            alt="iHerb evergreen ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">678d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-orange-700 uppercase">⭐ Long-run · Text</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Dec 2023 → Feb 2026</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/6333674567356707213" alt="iHerb ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">351d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Text · 380×199</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Feb 2025 → Feb 2026</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/2912101713911285840" alt="iHerb ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">347d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Text · 380×199</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Feb 2025 → Feb 2026</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/11396285369836097226" alt="iHerb ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">261d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Text · 380×248</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Mar 2025 → Feb 2026</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border border-orange-200">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/14807691082072225169"
+                            alt="iHerb new ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">9d</div>
+                        <div class="absolute top-8 right-2"><span class="tag bg-orange-500 text-white">New</span></div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-orange-700 uppercase">Image · 724×423</p>
+                        <p class="text-xs text-orange-600 mt-0.5 font-semibold">Feb 19 2026 burst ✓</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== HAPPYSUPPS TAB ========== -->
+        <div id="panel-happy" class="tab-content competitor-happy">
+
+            <div class="glass-panel rounded-2xl p-8 mb-8 border-t-4" style="border-top-color: #8b5cf6;">
+                <div class="flex flex-col md:flex-row justify-between gap-6">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-3 h-3 rounded-full bg-violet-400 animate-pulse"></span>
+                            <span class="font-display font-bold text-2xl text-slate-900">HappySupps</span>
+                            <a href="https://happysupps.nl" target="_blank"
+                                class="text-sm text-violet-700 hover:underline font-mono">happysupps.nl ↗</a>
+                        </div>
+                        <p class="text-lg text-slate-600 font-medium mb-4 italic">"Health is happiness" / "Unlock the
+                            best version of yourself"</p>
+                        <p class="text-sm text-slate-600 leading-relaxed max-w-2xl">Dutch supplement brand (DK-Ecom bv)
+                            targeting mental wellbeing, focus, sleep and hydration. Premium pre-packed day sachets.
+                            Clinical backing claims. Active "❄️ EINDE WINTER SALE: 2+1 GRATIS" promotion.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 md:justify-end items-start content-start">
+                        <div class="bg-violet-50 border border-violet-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-violet-700">5★</p>
+                            <p class="text-xs text-slate-500 mt-1">Trustpilot</p>
+                        </div>
+                        <div class="bg-violet-50 border border-violet-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-violet-700">230+</p>
+                            <p class="text-xs text-slate-500 mt-1">Reviews</p>
+                        </div>
+                        <div class="bg-violet-50 border border-violet-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-violet-700">2+1</p>
+                            <p class="text-xs text-slate-500 mt-1">Winter Sale</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="font-display font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="package" class="w-4 h-4 text-violet-600"></i> Products
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-violet-50 border border-violet-200 rounded-lg p-3">
+                            <p class="font-semibold text-slate-800 text-sm">Happy Brain</p>
+                            <p class="text-xs text-slate-500 mt-1">Premium Nootropic — 6 plant extracts, adaptogens.
+                                Pre-packed day sachets.</p>
+                        </div>
+                        <div class="bg-violet-50 border border-violet-200 rounded-lg p-3">
+                            <p class="font-semibold text-slate-800 text-sm">Happy Sleep</p>
+                            <p class="text-xs text-slate-500 mt-1">Premium Sleep &amp; Relaxation — calming minerals and
+                                herbs for deep, uninterrupted sleep.</p>
+                        </div>
+                        <div class="bg-violet-50 border border-violet-200 rounded-lg p-3">
+                            <p class="font-semibold text-slate-800 text-sm">Happy Electrolytes</p>
+                            <p class="text-xs text-slate-500 mt-1">Premium Hydration — 3 electrolytes + organic lemon.
+                                Nervous system support.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="font-display font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-violet-600"></i> USPs &amp; Claims
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">"Klinisch bewezen" — Clinically proven claims</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">Organic &amp; biological ingredients (Biologische
+                                ingrediënten)</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">Pre-packed day sachets for convenience &amp; consistent
+                                dosing</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">Unique proprietary formulas — "Unieke formules"</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span
+                                class="w-5 h-5 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center flex-shrink-0 mt-0.5"><i
+                                    data-lucide="check" class="w-3 h-3"></i></span>
+                            <p class="text-sm text-slate-600">Optimale opname — Optimal absorption guarantee</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="font-display font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="users" class="w-4 h-4 text-violet-600"></i> Conversion Strategy
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-violet-50 border border-violet-200 rounded-lg p-3">
+                            <p class="text-xs font-bold text-violet-700 uppercase tracking-wider mb-1">❄️ Winter Sale
+                            </p>
+                            <p class="text-sm text-slate-700">2+1 GRATIS — buy 2, get 1 free (active now)</p>
+                        </div>
+                        <div class="bg-violet-50 border border-violet-200 rounded-lg p-3">
+                            <p class="text-xs font-bold text-violet-700 uppercase tracking-wider mb-1">VIP Club</p>
+                            <p class="text-sm text-slate-700">Early access to new releases, special offers &amp;
+                                restocks</p>
+                        </div>
+                        <div class="flex items-center gap-2 mt-3 text-xs text-slate-500">
+                            <i data-lucide="mail" class="w-3 h-3"></i> support@happysupps.nl · Mon–Fri 09:00–18:00
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YouTube Section -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="section-accent-bar bg-violet-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">YouTube Ads — 3 Creatives (DK-Ecom bv)
+                </h3>
+                <span class="tag bg-violet-100 text-violet-700 border border-violet-200">107K total views</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+                <!-- Top performer -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border-2 border-violet-300">
+                    <a href="https://www.youtube.com/watch?v=JYT0W0N6p6w" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/JYT0W0N6p6w/hqdefault.jpg" alt="HappySupps top ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">333d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-2 left-2"><span class="tag bg-violet-500 text-white">79,988
+                                    Views</span></div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <p class="text-xs font-bold text-violet-700 uppercase tracking-wider mb-1">Top Performer · ~240
+                            views/day</p>
+                        <p class="text-sm font-semibold text-slate-800">Video JYT0W0N6p6w</p>
+                        <p class="text-xs text-slate-500 mt-1">Dec 14 2024 → Nov 24 2025</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="thumbs-up" class="w-3 h-3 inline mr-1"></i>892 likes</span>
+                            <span class="text-violet-600 font-semibold">Like rate: 1.12%</span>
+                        </div>
+                        <a href="https://adstransparency.google.com/advertiser/AR07728115147398447105/creative/CR09347229771160879105?region=anywhere&domain=happysupplements.nl&platform=YOUTUBE"
+                            target="_blank"
+                            class="text-[10px] text-violet-600 hover:underline mt-2 inline-flex items-center gap-1">View
+                            in ATC ↗</a>
+                    </div>
+                </div>
+
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=-caYdKOKufs" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/-caYdKOKufs/hqdefault.jpg" alt="HappySupps ad 2">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">125d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                            <div class="absolute top-8 right-2"><span class="tag bg-red-500 text-white">Stopped</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">~198 views/day
+                            velocity</p>
+                        <p class="text-sm font-semibold text-slate-800">Video -caYdKOKufs</p>
+                        <p class="text-xs text-slate-500 mt-1">Dec 14 2024 → Apr 22 2025 (stopped)</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>24,816</span>
+                            <span><i data-lucide="thumbs-up" class="w-3 h-3 inline mr-1"></i>97</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=jWnDl18RnoY" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/jWnDl18RnoY/hqdefault.jpg" alt="HappySupps ad 3">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">202d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Low reach · ~13
+                            views/day</p>
+                        <p class="text-sm font-semibold text-slate-800">Video jWnDl18RnoY</p>
+                        <p class="text-xs text-slate-500 mt-1">Apr 23 2025 → Nov 24 2025</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>2,753</span>
+                            <span><i data-lucide="thumbs-up" class="w-3 h-3 inline mr-1"></i>6</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Ads -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="section-accent-bar bg-violet-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Google Ads — 14 Creatives</h3>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border-2 border-violet-300">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/11985201577034995046"
+                            alt="HappySupps evergreen ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">681d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-violet-700 uppercase">⭐ Evergreen · Text</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Oct 2023 → Aug 2025</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/1005586245882831764"
+                            alt="HappySupps image ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">324d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Image · 723w</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Dec 2024 → Nov 2025</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/5554656583627147265"
+                            alt="HappySupps text ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">241d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Text · 381×313</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Mar 2025 → Nov 2025</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border border-violet-200">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/5618021305520355311"
+                            alt="HappySupps recent ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">67d</div>
+                        <div class="absolute top-8 right-2"><span class="tag bg-violet-500 text-white">Recent</span>
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-violet-700 uppercase">Text · 380×239</p>
+                        <p class="text-xs text-violet-600 mt-0.5 font-semibold">Aug 2025 → Dec 2025</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/14163726021423687590"
+                            alt="HappySupps image ad 2"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">213d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Image · 723w</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Apr 2025 → Nov 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== HOLLAND & BARRETT TAB ========== -->
+        <div id="panel-hnb" class="tab-content competitor-hnb">
+
+            <div class="glass-panel rounded-2xl p-8 mb-8 border-t-4" style="border-top-color: #10b981;">
+                <div class="flex flex-col md:flex-row justify-between gap-6">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="font-display font-bold text-2xl text-slate-900">Holland &amp; Barrett</span>
+                            <a href="https://hollandandbarrett.nl" target="_blank"
+                                class="text-sm text-emerald-700 hover:underline font-mono">hollandandbarrett.nl ↗</a>
+                        </div>
+                        <p class="text-lg text-slate-600 font-medium mb-4 italic">"Specialist in natural health and
+                            care"</p>
+                        <p class="text-sm text-slate-600 leading-relaxed max-w-2xl">Authority brand with 4,500+ products
+                            and a highly sophisticated content-led advertising strategy via the branded "BreinTalk"
+                            series (hosted by Dr. Marcia Goddard). Campaigns cover Sleep, Nutrition, Movement, and
+                            Stress — all driving to hollandandbarrett.nl. Current promo: "2e product 50% korting."</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 md:justify-end items-start content-start">
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-emerald-700">4,500+</p>
+                            <p class="text-xs text-slate-500 mt-1">Products</p>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-emerald-700">€30</p>
+                            <p class="text-xs text-slate-500 mt-1">Free Shipping</p>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center min-w-[100px]">
+                            <p class="font-display font-bold text-2xl text-emerald-700">5.6M+</p>
+                            <p class="text-xs text-slate-500 mt-1">YouTube Views</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BreinTalk Series Banner -->
+            <div
+                class="bg-gradient-to-r from-emerald-700 to-emerald-900 rounded-2xl p-6 mb-8 text-white relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10"
+                    style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 24px 24px;">
+                </div>
+                <div class="relative z-10 flex items-center gap-4">
+                    <i data-lucide="brain" class="w-10 h-10 text-emerald-300 flex-shrink-0"></i>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-emerald-300 mb-1">Brand Strategy
+                            Highlight</p>
+                        <h4 class="font-display text-xl font-bold mb-2">BreinTalk Series — Education-First YouTube
+                            Strategy</h4>
+                        <p class="text-sm text-emerald-100 max-w-2xl">Holland &amp; Barrett runs a branded educational
+                            video series featuring Dr. Marcia Goddard covering Sleep &amp; Brain Health, Stress
+                            Management, Nutrition for the Brain, and Movement &amp; BDNF. These long-form content videos
+                            are then repurposed as YouTube ads — an authority-building approach that differentiates them
+                            from direct-response competitors.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YouTube Section -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="section-accent-bar bg-emerald-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">YouTube Ads — 8 Creatives (Holland &amp;
+                    Barrett B.V.)</h3>
+                <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200">Active Feb 2026</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+
+                <!-- Top by views -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border-2 border-emerald-300">
+                    <a href="https://www.youtube.com/watch?v=STU_-zXMNmU" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/STU_-zXMNmU/hqdefault.jpg" alt="H&B top YouTube ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">4d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-2 left-2"><span class="tag bg-emerald-500 text-white">2.9M
+                                    Views</span></div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <p class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">Top by Views</p>
+                        <p class="text-sm font-semibold text-slate-800">Video STU_-zXMNmU</p>
+                        <p class="text-xs text-slate-500 mt-1">Feb 24–26 2026 (very recent push)</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>2,908,012</span>
+                            <span><i data-lucide="thumbs-up" class="w-3 h-3 inline mr-1"></i>22</span>
+                        </div>
+                        <a href="https://adstransparency.google.com/advertiser/AR11567737672898183169/creative/CR09104082455534501889?region=anywhere&domain=hollandandbarrett.nl&platform=YOUTUBE"
+                            target="_blank"
+                            class="text-[10px] text-emerald-600 hover:underline mt-2 inline-flex items-center gap-1">View
+                            in ATC ↗</a>
+                    </div>
+                </div>
+
+                <!-- BreinTalk Movement -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=quEvTLsQlxE" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/quEvTLsQlxE/hqdefault.jpg" alt="H&B BreinTalk Movement">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">30d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200 mb-2">BreinTalk ·
+                            Movement</span>
+                        <p class="text-sm font-semibold text-slate-800 mt-1">Exercise &amp; BDNF for Brain Health</p>
+                        <p class="text-xs text-slate-500 mt-1">Jan 27 → Feb 25 2026</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>1,018,832</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BreinTalk Sleep -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=m5TVNM8uzaY" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/m5TVNM8uzaY/hqdefault.jpg" alt="H&B BreinTalk Sleep">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">30d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200 mb-2">BreinTalk ·
+                            Sleep</span>
+                        <p class="text-sm font-semibold text-slate-800 mt-1">Sleep &amp; Brain Health; "Brain Cleaning"
+                        </p>
+                        <p class="text-xs text-slate-500 mt-1">Jan 27 → Feb 25 2026</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>1,135,976</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BreinTalk Stress -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=k8CvFQhN0js" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/k8CvFQhN0js/hqdefault.jpg" alt="H&B BreinTalk Stress">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">53d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200 mb-2">BreinTalk ·
+                            Stress</span>
+                        <p class="text-sm font-semibold text-slate-800 mt-1">Stress Management &amp; Calming Techniques
+                        </p>
+                        <p class="text-xs text-slate-500 mt-1">Jan 4 → Feb 25 2026</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>702,862</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BreinTalk Nutrition -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <a href="https://www.youtube.com/watch?v=HVcqpUfPFfk" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/HVcqpUfPFfk/hqdefault.jpg" alt="H&B BreinTalk Nutrition">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">30d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200 mb-2">BreinTalk ·
+                            Nutrition</span>
+                        <p class="text-sm font-semibold text-slate-800 mt-1">Gut-Brain Link, Hydration &amp; Brain Food
+                        </p>
+                        <p class="text-xs text-slate-500 mt-1">Jan 27 → Feb 25 2026</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>633,812</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Promo ad -->
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border border-emerald-300">
+                    <a href="https://www.youtube.com/watch?v=5ePtt3vDWXY" target="_blank">
+                        <div class="img-preview h-44 relative">
+                            <img src="https://i.ytimg.com/vi/5ePtt3vDWXY/hqdefault.jpg" alt="H&B promo ad">
+                            <div class="ad-overlay"></div>
+                            <div class="days-pill">4d</div>
+                            <div class="yt-play">
+                                <div class="yt-play-btn"><i data-lucide="play" class="w-4 h-4 text-white ml-0.5"></i>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-2 left-2"><span class="tag bg-amber-500 text-white">Promo
+                                    Ad</span></div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <p class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Direct-Response</p>
+                        <p class="text-sm font-semibold text-slate-800">"Nu 2e product 50% korting"</p>
+                        <p class="text-xs text-slate-500 mt-1">Feb 23–25 2026 (very fresh)</p>
+                        <div class="flex gap-4 mt-2 text-xs text-slate-500">
+                            <span><i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>257,636</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Ads Section -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="section-accent-bar bg-emerald-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Google Ads — 28 Creatives</h3>
+                <span class="tag bg-emerald-100 text-emerald-700 border border-emerald-200">Since Oct 2021</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="glass-panel rounded-xl p-5 stat-card border-2 border-emerald-200">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Oldest Evergreen</p>
+                    <p class="font-display text-xl font-bold text-emerald-700">1,573 days</p>
+                    <p class="text-xs text-slate-500 mt-1">Running since Oct 25 2021 (!)</p>
+                </div>
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">2nd Evergreen</p>
+                    <p class="font-display text-xl font-bold text-slate-900">942 days</p>
+                    <p class="text-xs text-slate-500 mt-1">Running since Mar 2023</p>
+                </div>
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Feb 2026 Image Test
+                    </p>
+                    <p class="font-display text-xl font-bold text-emerald-600">4 new image ads</p>
+                    <p class="text-xs text-slate-500 mt-1">Launched Feb 23 2026 (3 days ago)</p>
+                </div>
+                <div class="glass-panel rounded-xl p-5 stat-card">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Note</p>
+                    <p class="font-display text-sm font-bold text-amber-700">SINOADS LTD</p>
+                    <p class="text-xs text-slate-500 mt-1">3rd-party advertising H&amp;B domain (236 days)</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border-2 border-emerald-400">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/10336796346712012088"
+                            alt="H&B evergreen 1"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">1,573d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-emerald-700 uppercase">⭐ #1 Evergreen · Text</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Oct 2021 → Feb 2026</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/9940792512849264170"
+                            alt="H&B evergreen 2"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">942d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">⭐ #2 Evergreen</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Mar 2023 → Feb 2026</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/254486280580574284"
+                            alt="H&B long run ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">823d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Text ad</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Nov 2023 → Feb 2026</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/14290387617155056632"
+                            alt="H&B text ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">343d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Text · Mar 2025</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Mar 2025 → Feb 2026</p>
+                    </div>
+                </div>
+                <div class="ad-card glass-panel rounded-xl overflow-hidden border border-emerald-200">
+                    <div class="img-preview h-32">
+                        <img src="https://tpc.googlesyndication.com/archive/simgad/16650905887251166085"
+                            alt="SINOADS ad"
+                            onerror="this.parentElement.style.background='#f1f5f9';this.style.display='none'">
+                        <div class="ad-overlay"></div>
+                        <div class="days-pill">236d</div>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[10px] font-bold text-amber-700 uppercase">⚠ SINOADS LTD</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Jul 2025 → Feb 2026 (3rd party)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-slate-200 mt-auto py-8 bg-white/50 backdrop-blur-sm">
+        <div
+            class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <p class="text-slate-500">Generated for <strong class="text-slate-700">Restfulness</strong> · Competitor
+                Intelligence Report · Feb 19–26, 2026</p>
+            <div class="flex items-center gap-2 text-slate-400 font-bold tracking-widest uppercase text-xs">
+                <i data-lucide="radar" class="w-4 h-4 text-brand-500"></i> Ad-Lab.io Internal
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        function switchTab(tabId, event) {
+            document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('panel-' + tabId).classList.add('active');
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+        }
+    </script>
+</body>
+
+</html>

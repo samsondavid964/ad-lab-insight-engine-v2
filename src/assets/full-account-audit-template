@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bhealth.shop — Google Ads Account Audit</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        body {
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.04), transparent 35%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.03), transparent 35%);
+            background-attachment: fixed;
+            color: #0f172a;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.04), 0 4px 16px -4px rgba(0, 0, 0, 0.02);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-tab {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #6366f1;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            box-shadow: 0 -2px 10px rgba(99, 102, 241, 0.2);
+        }
+
+        .nav-tab.active {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .nav-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .stat-card {
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 12px 32px -4px rgba(99, 102, 241, 0.08);
+        }
+
+        .issue-row {
+            transition: background 0.15s ease;
+        }
+
+        .issue-row:hover {
+            background: #f8fafc;
+        }
+
+        /* Status pills */
+        .pill-ok {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .pill-warn {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        .pill-error {
+            background: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #fecdd3;
+        }
+
+        .pill-neutral {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pill-hidden {
+            background: #faf5ff;
+            color: #7c3aed;
+            border: 1px solid #ddd6fe;
+        }
+
+        .score-bar-track {
+            background: #e2e8f0;
+            border-radius: 999px;
+            height: 6px;
+        }
+
+        .score-bar-fill {
+            border-radius: 999px;
+            height: 6px;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .campaign-row {
+            border-left: 4px solid transparent;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .campaign-row:hover {
+            background: #f8fafc;
+            border-left-color: #6366f1;
+        }
+
+        .roas-badge-high {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .roas-badge-mid {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+        }
+
+        .roas-badge-low {
+            background: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #fdba74;
+        }
+
+        .roas-badge-zero {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+        }
+
+        .strength-excellent {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .strength-good {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+        }
+
+        .strength-average {
+            background: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .strength-poor {
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+        }
+
+        .strength-null {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+        }
+    </style>
+</head>
+
+<body
+    class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white relative overflow-x-hidden">
+
+    <!-- Ambient Grid -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none opacity-40"
+        style="background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px); background-size: 32px 32px;">
+    </div>
+
+    <!-- ── Header ── -->
+    <header class="relative pt-12 pb-8 px-6 lg:px-12 z-10 bg-[#4338ca] shadow-lg overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-10 pointer-events-none"
+            style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 32px 32px;">
+        </div>
+        <div
+            class="absolute inset-0 z-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none">
+        </div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-white/20 pb-10">
+
+                <!-- Brand & Title -->
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 border border-white/20 text-white shadow-sm">
+                            <i data-lucide="activity" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-white/70">Ad-Lab.io</span>
+                        <span class="text-white/30">|</span>
+                        <span class="text-xs font-semibold tracking-widest uppercase text-white">Google Ads Account
+                            Audit</span>
+                    </div>
+                    <h1 class="font-display text-5xl md:text-6xl font-bold tracking-tight text-white mb-6">
+                        bhealth<span class="text-white/50 font-light">.shop</span>
+                    </h1>
+                    <div class="flex flex-wrap gap-x-8 gap-y-4 text-sm">
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Report Period
+                            </p>
+                            <p class="text-white font-medium">Feb 1 – Feb 24, 2026</p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Account ID</p>
+                            <p class="text-white font-mono">385-093-5442</p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Active
+                                Campaigns</p>
+                            <p class="text-white font-medium">6 campaigns</p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 uppercase tracking-wider text-[10px] font-bold mb-1">Generated By
+                            </p>
+                            <p class="text-white font-medium flex items-center gap-2">
+                                <i data-lucide="bot" class="w-3 h-3 text-white/70"></i> Internal Tooling
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Score Gauge -->
+                <div
+                    class="bg-black/20 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl p-6 flex items-center gap-6">
+                    <div>
+                        <p class="text-xs font-bold text-white uppercase tracking-widest mb-1">Account Health</p>
+                        <p class="text-sm text-white/70">Based on 12+ signals</p>
+                        <div class="mt-3 space-y-1.5">
+                            <div class="flex items-center gap-2 text-xs">
+                                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                                <span class="text-white/80">3 items passing</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs">
+                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                                <span class="text-white/80">3 warnings</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs">
+                                <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                                <span class="text-white/80">2 critical issues</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative w-28 h-28 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-full h-full transform -rotate-90 absolute inset-0" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.15)" stroke-width="8"
+                                fill="none" />
+                            <circle class="progress-ring__circle" cx="50" cy="50" r="42" stroke="#fbbf24"
+                                stroke-width="8" fill="none" stroke-dasharray="264" stroke-dashoffset="264"
+                                id="healthCircle" stroke-linecap="round" />
+                        </svg>
+                        <div class="text-center relative z-10 flex flex-col items-center">
+                            <span class="font-display text-3xl font-bold text-amber-300 leading-none">6.2</span>
+                            <span class="text-[10px] font-bold text-white/60 uppercase mt-1">out of 10</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- ── Navigation ── -->
+    <nav class="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="flex overflow-x-auto hide-scrollbar gap-8">
+                <button class="nav-tab active py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('overview', event)">Executive Summary</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('campaigns', event)">Campaign Performance</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('keywords', event)">Keywords &amp; Search</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap"
+                    onclick="switchTab('technical', event)">Technical Audit</button>
+                <button class="nav-tab py-4 text-sm text-slate-500 whitespace-nowrap flex items-center gap-2"
+                    onclick="switchTab('action', event)">
+                    <i data-lucide="zap" class="w-4 h-4 text-indigo-600"></i> Action Plan
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── Main ── -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
+
+        <!-- ══════════════════════════════════════════
+         1. EXECUTIVE SUMMARY
+    ══════════════════════════════════════════ -->
+        <div id="panel-overview" class="tab-content active">
+
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Month-to-Date Account Metrics</h2>
+                <span class="text-xs text-slate-400 font-medium">Feb 1 – Feb 24, 2026</span>
+            </div>
+
+            <!-- KPI Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
+
+                <div class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group">
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center justify-between">
+                        Total Spend <i data-lucide="wallet" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1">
+                        $<span class="animate-number" data-val="23052">0</span>
+                    </p>
+                    <p class="text-xs text-slate-400">471,849 impressions</p>
+                </div>
+
+                <div
+                    class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group relative overflow-hidden border-emerald-100">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        style="background: radial-gradient(circle at 50% 0%, rgba(16,185,129,0.06), transparent 70%)">
+                    </div>
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 relative flex items-center justify-between">
+                        Conversions <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1 relative">
+                        <span class="animate-number" data-val="137" data-decimals="0">0</span>
+                    </p>
+                    <p class="text-xs text-emerald-600 relative font-medium">4.19% CVR</p>
+                </div>
+
+                <div class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group">
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center justify-between">
+                        Conv. Value <i data-lucide="banknote" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1">
+                        $<span class="animate-number" data-val="66085">0</span>
+                    </p>
+                    <p class="text-xs text-slate-400">Total Revenue</p>
+                </div>
+
+                <div class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group">
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center justify-between">
+                        Avg. CPA <i data-lucide="target" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1">
+                        $<span class="animate-number" data-val="168" data-decimals="0">0</span>
+                    </p>
+                    <p class="text-xs text-slate-400">$7.05 avg. CPC</p>
+                </div>
+
+                <div
+                    class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group relative overflow-hidden border-indigo-100">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        style="background: radial-gradient(circle at 50% -20%, rgba(99,102,241,0.07), transparent 60%)">
+                    </div>
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 relative flex items-center justify-between">
+                        MTD ROAS <i data-lucide="trending-up" class="w-3.5 h-3.5 opacity-40 text-indigo-600"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-indigo-600 mb-1 relative">
+                        <span class="animate-number" data-val="2.87" data-decimals="2">0</span>x
+                    </p>
+                    <p class="text-xs text-slate-500 relative">Account efficiency</p>
+                </div>
+
+                <div class="stat-card glass-panel p-5 rounded-2xl flex flex-col justify-between group">
+                    <p
+                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center justify-between">
+                        CTR <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 opacity-40"></i>
+                    </p>
+                    <p class="font-display text-2xl font-bold text-slate-900 mb-1">
+                        <span class="animate-number" data-val="0.69" data-decimals="2">0</span>%
+                    </p>
+                    <p class="text-xs text-slate-400">3,272 clicks</p>
+                </div>
+
+            </div>
+
+            <!-- Key Signals -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Key Signals</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+                <!-- CRITICAL: Disapproved Ads -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-t-4 border-t-rose-500">
+                    <div
+                        class="absolute top-0 right-0 p-6 opacity-[0.03] transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="alert-triangle" class="w-24 h-24 text-rose-500"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span
+                            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-100 border border-rose-200 text-rose-700 text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> Critical
+                        </span>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Brand Search Ads Disapproved</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6 relative z-10">
+                        Both Responsive Search Ads in the Brand campaign are <strong>DISAPPROVED</strong>. This means
+                        brand queries are not being captured by paid search — a direct revenue risk.
+                    </p>
+                    <div class="mt-auto pt-4 border-t border-slate-100 relative z-10">
+                        <div class="font-display text-3xl font-bold text-rose-600 leading-none mb-1">2 RSAs</div>
+                        <div class="text-xs text-slate-500">disapproved in Brand | SA campaign</div>
+                    </div>
+                </div>
+
+                <!-- WARNING: Language Targeting -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-t-4 border-t-amber-500">
+                    <div
+                        class="absolute top-0 right-0 p-6 opacity-[0.03] transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="globe" class="w-24 h-24 text-amber-500"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span
+                            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 border border-amber-200 text-amber-700 text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Warning
+                        </span>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Language Mis-targeting: Arabic</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6 relative z-10">
+                        Two high-spend PMax campaigns are set to <strong>Arabic</strong> instead of English. Budget is
+                        being served to the wrong audience segment.
+                    </p>
+                    <div class="mt-auto pt-4 border-t border-slate-100 relative z-10">
+                        <div class="font-display text-3xl font-bold text-amber-600 leading-none mb-1">$9,934</div>
+                        <div class="text-xs text-slate-500">spend in mis-targeted campaigns</div>
+                    </div>
+                </div>
+
+                <!-- POSITIVE: Brand ROAS -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-t-4 border-t-emerald-500">
+                    <div
+                        class="absolute top-0 right-0 p-6 opacity-[0.03] transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="sparkles" class="w-24 h-24 text-emerald-500"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span
+                            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-700 text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Strength
+                        </span>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Brand Search: Exceptional ROAS</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6 relative z-10">
+                        The Brand Search campaign delivers an extraordinary <strong>28.1x ROAS</strong> on just $258
+                        spend. Despite low budget, it drove $7,270 in conversion value — make sure it's never
+                        budget-capped.
+                    </p>
+                    <div class="mt-auto pt-4 border-t border-slate-100 relative z-10">
+                        <div class="font-display text-3xl font-bold text-emerald-600 leading-none mb-1">28.1x</div>
+                        <div class="text-xs text-slate-500">ROAS on Brand | Search campaign</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Conversion Tracking Summary -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Conversion Tracking Overview</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div class="glass-panel rounded-2xl p-5 text-center stat-card border-t-4 border-t-emerald-400">
+                    <p class="font-display text-4xl font-bold text-emerald-600 mb-1">22</p>
+                    <p class="text-sm font-semibold text-slate-700">Enabled</p>
+                    <p class="text-xs text-slate-400 mt-1">Active conversion actions</p>
+                </div>
+                <div class="glass-panel rounded-2xl p-5 text-center stat-card border-t-4 border-t-violet-400">
+                    <p class="font-display text-4xl font-bold text-violet-600 mb-1">2</p>
+                    <p class="text-sm font-semibold text-slate-700">Hidden</p>
+                    <p class="text-xs text-slate-400 mt-1">Not counting toward goals</p>
+                </div>
+                <div class="glass-panel rounded-2xl p-5 text-center stat-card border-t-4 border-t-slate-400">
+                    <p class="font-display text-4xl font-bold text-slate-600 mb-1">3</p>
+                    <p class="text-sm font-semibold text-slate-700">Removed</p>
+                    <p class="text-xs text-slate-400 mt-1">Archived / deactivated</p>
+                </div>
+                <div class="glass-panel rounded-2xl p-5 text-center stat-card border-t-4 border-t-amber-400">
+                    <p class="font-display text-4xl font-bold text-amber-600 mb-1">28</p>
+                    <p class="text-sm font-semibold text-slate-700">Total Actions</p>
+                    <p class="text-xs text-slate-400 mt-1">Across all statuses</p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400 mb-12 flex items-center gap-1.5 ml-1">
+                <i data-lucide="info" class="w-3 h-3"></i>
+                22 active conversion actions is high — review for double-counting or redundant signals affecting
+                bidding.
+            </p>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════
+         2. CAMPAIGN PERFORMANCE
+    ══════════════════════════════════════════ -->
+        <div id="panel-campaigns" class="tab-content">
+
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Campaign Performance — Feb 1–24, 2026
+                </h2>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                <div class="glass-panel rounded-2xl p-6">
+                    <p class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-600"></i>
+                        Spend vs. Conversion Value by Campaign
+                    </p>
+                    <div style="height:260px; position:relative;">
+                        <canvas id="spendValueChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-2xl p-6">
+                    <p class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <i data-lucide="trending-up" class="w-4 h-4 text-indigo-600"></i>
+                        ROAS by Campaign
+                    </p>
+                    <div style="height:260px; position:relative;">
+                        <canvas id="roasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spend Donut + Bidding Scores -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                <div class="glass-panel rounded-2xl p-6">
+                    <p class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-600"></i>
+                        Spend Share by Campaign
+                    </p>
+                    <div style="height:260px; position:relative;">
+                        <canvas id="spendShareChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6">
+                    <p class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <i data-lucide="gauge" class="w-4 h-4 text-indigo-600"></i>
+                        Bidding Strategy Score
+                        <span class="text-[10px] text-slate-400 font-normal">(efficiency signal — higher =
+                            better)</span>
+                    </p>
+                    <div class="space-y-4 mt-2">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-700 font-medium truncate max-w-[200px]">Brand Search
+                                    (TIS)</span>
+                                <span class="font-mono font-bold text-emerald-700 ml-2">2,814.6</span>
+                            </div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill bg-emerald-500" style="width:0%" data-target="100%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-700 font-medium truncate max-w-[200px]">PMax Non-Performers
+                                    (tROAS 3x)</span>
+                                <span class="font-mono font-bold text-indigo-600 ml-2">278.1</span>
+                            </div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill bg-indigo-400" style="width:0%" data-target="9.9%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-700 font-medium truncate max-w-[200px]">PMax AE Prospecting
+                                    (MCV)</span>
+                                <span class="font-mono font-bold text-indigo-600 ml-2">341.5</span>
+                            </div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill bg-indigo-400" style="width:0%" data-target="12.1%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-700 font-medium truncate max-w-[200px]">PMax SA/AE Remarketing
+                                    (MCV)</span>
+                                <span class="font-mono font-bold text-amber-600 ml-2">222.2</span>
+                            </div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill bg-amber-400" style="width:0%" data-target="7.9%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-700 font-medium truncate max-w-[200px]">PMax SA/AE Competitor
+                                    (MCV)</span>
+                                <span class="font-mono font-bold text-amber-600 ml-2">213.5</span>
+                            </div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill bg-amber-400" style="width:0%" data-target="7.6%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-700 font-medium truncate max-w-[200px]">PMax SA Prospecting
+                                    (tROAS 3.7x)</span>
+                                <span class="font-mono font-bold text-rose-600 ml-2">154.7</span>
+                            </div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill bg-rose-400" style="width:0%" data-target="5.5%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-700 font-medium truncate max-w-[200px]">Vitamins &amp; Food
+                                    Supplements</span>
+                                <span class="font-mono font-bold text-slate-500 ml-2">0.0</span>
+                            </div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill bg-slate-300" style="width:0%" data-target="0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaign Detail Table -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Campaign Breakdown</h3>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden mb-10">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-left">
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Campaign</th>
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Strategy</th>
+                                <th
+                                    class="px-5 py-4 text-right font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Spend</th>
+                                <th
+                                    class="px-5 py-4 text-right font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Conv.</th>
+                                <th
+                                    class="px-5 py-4 text-right font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Conv. Value</th>
+                                <th
+                                    class="px-5 py-4 text-right font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    CPA</th>
+                                <th
+                                    class="px-5 py-4 text-right font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    ROAS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="campaignTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Ad Strength -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Ad Strength &amp; Approval Status</h3>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-left">
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Campaign</th>
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">Ad
+                                    Type</th>
+                                <th
+                                    class="px-5 py-4 text-center font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Ad Strength</th>
+                                <th
+                                    class="px-5 py-4 text-center font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Approval</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="issue-row">
+                                <td class="px-5 py-4 text-slate-600">Vitamins and Food Supplements</td>
+                                <td class="px-5 py-4"><span
+                                        class="text-xs font-mono text-slate-500">SMART_CAMPAIGN_AD</span></td>
+                                <td class="px-5 py-4 text-center"><span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold strength-null">N/A</span>
+                                </td>
+                                <td class="px-5 py-4 text-center"><span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold pill-warn">Approved
+                                        (Limited)</span></td>
+                            </tr>
+                            <tr class="issue-row">
+                                <td class="px-5 py-4 text-slate-600">Brand | SA/AE — RSA #1</td>
+                                <td class="px-5 py-4"><span
+                                        class="text-xs font-mono text-slate-500">RESPONSIVE_SEARCH_AD</span></td>
+                                <td class="px-5 py-4 text-center"><span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold strength-average">Average</span>
+                                </td>
+                                <td class="px-5 py-4 text-center"><span
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold pill-error">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                        Disapproved
+                                    </span></td>
+                            </tr>
+                            <tr class="issue-row">
+                                <td class="px-5 py-4 text-slate-600">Brand | SA/AE — RSA #2</td>
+                                <td class="px-5 py-4"><span
+                                        class="text-xs font-mono text-slate-500">RESPONSIVE_SEARCH_AD</span></td>
+                                <td class="px-5 py-4 text-center"><span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold strength-poor">Poor</span>
+                                </td>
+                                <td class="px-5 py-4 text-center"><span
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold pill-error">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                        Disapproved
+                                    </span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-5 py-4 bg-rose-50 border-t border-rose-100">
+                    <p class="text-sm text-rose-700 flex items-start gap-2">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                        <span><strong>Immediate action required:</strong> Both RSAs in the Brand | Search campaign are
+                            disapproved. Review policy violations in the Google Ads dashboard and fix ad copy to restore
+                            serving.</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════
+         3. KEYWORDS & SEARCH
+    ══════════════════════════════════════════ -->
+        <div id="panel-keywords" class="tab-content">
+
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Keywords &amp; Search Intelligence</h2>
+            </div>
+
+            <!-- Clean bills -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                <div class="glass-panel rounded-2xl p-5 flex items-center gap-4 border-l-4 border-emerald-400">
+                    <span class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+                    </span>
+                    <div>
+                        <p class="font-semibold text-slate-800">No Wasteful Search Terms</p>
+                        <p class="text-sm text-slate-500 mt-0.5">No search terms found with ≤10 clicks and &gt;$5 CPC —
+                            the account is well-filtered.</p>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-2xl p-5 flex items-center gap-4 border-l-4 border-emerald-400">
+                    <span class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+                    </span>
+                    <div>
+                        <p class="font-semibold text-slate-800">No Zero-Conversion Spenders</p>
+                        <p class="text-sm text-slate-500 mt-0.5">No keywords found spending money without delivering
+                            conversions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Performing Keywords -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Top Performing Keywords</h3>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden mb-10">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-left">
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Keyword</th>
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Campaign</th>
+                                <th
+                                    class="px-5 py-4 text-right font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Conversions</th>
+                                <th
+                                    class="px-5 py-4 text-right font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    CPA</th>
+                                <th
+                                    class="px-5 py-4 text-center font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Impression Score</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="issue-row">
+                                <td class="px-5 py-4">
+                                    <span
+                                        class="font-mono text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">"b
+                                        health shop"</span>
+                                </td>
+                                <td class="px-5 py-4 text-slate-600 text-xs">Brand | SA/AE | TIS 95</td>
+                                <td class="px-5 py-4 text-right font-bold text-slate-900">10.00</td>
+                                <td class="px-5 py-4 text-right font-mono font-bold text-emerald-700">$15.40</td>
+                                <td class="px-5 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="score-bar-track w-24">
+                                            <div class="score-bar-fill bg-indigo-500" style="width:0%"
+                                                data-target="100%"></div>
+                                        </div>
+                                        <span class="text-xs text-slate-600 font-mono">1,660</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="issue-row">
+                                <td class="px-5 py-4">
+                                    <span
+                                        class="font-mono text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">"b
+                                        health"</span>
+                                </td>
+                                <td class="px-5 py-4 text-slate-600 text-xs">Brand | SA/AE | TIS 95</td>
+                                <td class="px-5 py-4 text-right font-bold text-slate-900">4.00</td>
+                                <td class="px-5 py-4 text-right font-mono font-bold text-emerald-700">$26.05</td>
+                                <td class="px-5 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="score-bar-track w-24">
+                                            <div class="score-bar-fill bg-indigo-400" style="width:0%"
+                                                data-target="88%"></div>
+                                        </div>
+                                        <span class="text-xs text-slate-600 font-mono">1,460</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="issue-row">
+                                <td class="px-5 py-4">
+                                    <span
+                                        class="font-mono text-sm font-semibold text-slate-600 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded">"bhealth"</span>
+                                </td>
+                                <td class="px-5 py-4 text-slate-600 text-xs">Brand | SA/AE | TIS 95</td>
+                                <td class="px-5 py-4 text-right text-slate-500">—</td>
+                                <td class="px-5 py-4 text-right text-slate-500">—</td>
+                                <td class="px-5 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="score-bar-track w-24">
+                                            <div class="score-bar-fill bg-slate-300" style="width:0%" data-target="3%">
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-slate-600 font-mono">70</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quality Score note -->
+            <div class="glass-panel rounded-2xl p-5 border border-amber-200 bg-amber-50/50 flex items-start gap-4">
+                <span class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600"></i>
+                </span>
+                <div>
+                    <p class="font-semibold text-slate-800 mb-1">Quality Score Data Not Available</p>
+                    <p class="text-sm text-slate-600">Keyword Quality Scores were not returned in this export. Quality
+                        Scores (1–10) directly affect ad rank and CPC — a low QS drives up costs. Recommend pulling QS
+                        data separately from the Google Ads UI or API to identify underperforming keywords.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════
+         4. TECHNICAL AUDIT
+    ══════════════════════════════════════════ -->
+        <div id="panel-technical" class="tab-content">
+
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Technical Configuration Audit</h2>
+            </div>
+
+            <!-- Check List -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Configuration Checks</h3>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden mb-10">
+                <div class="divide-y divide-slate-100">
+
+                    <div class="flex items-start gap-4 px-6 py-5 issue-row">
+                        <span
+                            class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                        </span>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-slate-800">No Search Partners or Display Expansion</p>
+                            <p class="text-sm text-slate-500 mt-0.5">All campaigns are correctly scoped — no unwanted
+                                network expansion detected.</p>
+                        </div>
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold pill-ok flex-shrink-0">✅
+                            Pass</span>
+                    </div>
+
+                    <div class="flex items-start gap-4 px-6 py-5 issue-row">
+                        <span
+                            class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                        </span>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-slate-800">Ad Rotation Set to OPTIMIZE</p>
+                            <p class="text-sm text-slate-500 mt-0.5">All scanned campaigns use the optimized rotation
+                                setting — Google will prioritize best-performing ads.</p>
+                        </div>
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold pill-ok flex-shrink-0">✅
+                            Pass</span>
+                    </div>
+
+                    <div class="flex items-start gap-4 px-6 py-5 issue-row">
+                        <span
+                            class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                        </span>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-slate-800">Location Targeting — Presence Targeting</p>
+                            <p class="text-sm text-slate-500 mt-0.5">All campaigns are correctly set to target users by
+                                physical presence. No presence-vs-interest targeting mis-configs found.</p>
+                        </div>
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold pill-ok flex-shrink-0">✅
+                            Pass</span>
+                    </div>
+
+                    <div class="flex items-start gap-4 px-6 py-5 issue-row bg-amber-50/40">
+                        <span
+                            class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                        </span>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-slate-800">Language Targeting — Arabic Set on 2 PMax Campaigns
+                            </p>
+                            <div class="mt-2 space-y-2">
+                                <div
+                                    class="flex items-center gap-2 bg-white border border-amber-200 rounded-lg px-3 py-2">
+                                    <i data-lucide="globe" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
+                                    <span class="text-sm text-slate-700 font-medium">Ad-Lab | PMax | AE | Prospecting |
+                                        MCV</span>
+                                    <span
+                                        class="ml-auto text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">Language:
+                                        Arabic</span>
+                                </div>
+                                <div
+                                    class="flex items-center gap-2 bg-white border border-amber-200 rounded-lg px-3 py-2">
+                                    <i data-lucide="globe" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
+                                    <span class="text-sm text-slate-700 font-medium">Ad-Lab | PMax | SA | Prospecting |
+                                        tROAS 3.7x</span>
+                                    <span
+                                        class="ml-auto text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">Language:
+                                        Arabic</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-amber-700 font-medium mt-2">Combined spend: ~$9,934 may be reaching
+                                the wrong audience.</p>
+                        </div>
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold pill-warn flex-shrink-0">⚠️
+                            Fix</span>
+                    </div>
+
+                    <div class="flex items-start gap-4 px-6 py-5 issue-row bg-rose-50/40">
+                        <span
+                            class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="x-circle" class="w-4 h-4 text-rose-600"></i>
+                        </span>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-slate-800">Disapproved Responsive Search Ads in Brand Campaign
+                            </p>
+                            <div class="mt-2 space-y-2">
+                                <div
+                                    class="flex items-center gap-2 bg-white border border-rose-200 rounded-lg px-3 py-2">
+                                    <i data-lucide="ban" class="w-3.5 h-3.5 text-rose-600 flex-shrink-0"></i>
+                                    <span class="text-sm text-slate-700">RSA #1 — Ad strength: AVERAGE</span>
+                                    <span
+                                        class="ml-auto text-xs font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">DISAPPROVED</span>
+                                </div>
+                                <div
+                                    class="flex items-center gap-2 bg-white border border-rose-200 rounded-lg px-3 py-2">
+                                    <i data-lucide="ban" class="w-3.5 h-3.5 text-rose-600 flex-shrink-0"></i>
+                                    <span class="text-sm text-slate-700">RSA #2 — Ad strength: POOR</span>
+                                    <span
+                                        class="ml-auto text-xs font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">DISAPPROVED</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-rose-700 font-medium mt-2">No serving RSAs mean brand searches go
+                                unanswered by paid ads. Fix immediately.</p>
+                        </div>
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold pill-error flex-shrink-0">🚨
+                            Critical</span>
+                    </div>
+
+                    <div class="flex items-start gap-4 px-6 py-5 issue-row bg-amber-50/40">
+                        <span
+                            class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i>
+                        </span>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-slate-800">Smart Campaign Ad — Approved (Limited)</p>
+                            <p class="text-sm text-slate-500 mt-0.5">"Vitamins and Food Supplements" Smart Campaign ad
+                                has an <strong>Approved (Limited)</strong> status — it's serving but reach is restricted
+                                due to a policy sensitivity (likely supplement-related ad policies). Review and improve
+                                to reach full serving capacity.</p>
+                        </div>
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold pill-warn flex-shrink-0">⚠️
+                            Review</span>
+                    </div>
+
+                    <div class="flex items-start gap-4 px-6 py-5 issue-row">
+                        <span
+                            class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                        </span>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-slate-800">All Campaign Assets Active</p>
+                            <p class="text-sm text-slate-500 mt-0.5">No disapproved or paused campaign-level assets
+                                detected.</p>
+                        </div>
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold pill-ok flex-shrink-0">✅
+                            Pass</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Audience Settings -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Audience Targeting Settings</h3>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden mb-10">
+                <div class="px-5 py-4 bg-slate-50 border-b border-slate-200">
+                    <p class="text-sm text-slate-600">Brand Terms ad group uses <strong>Observation</strong> (bid-only)
+                        targeting across all audience dimensions — this is best practice for brand campaigns, allowing
+                        broad reach while adjusting bids for specific audiences.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-white border-b border-slate-100 text-left">
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Dimension</th>
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">Mode
+                                </th>
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Assessment</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="issue-row">
+                                <td class="px-5 py-4 font-medium text-slate-700">Audience</td>
+                                <td class="px-5 py-4 text-slate-500 text-xs font-mono">BID_ONLY (Observation)</td>
+                                <td class="px-5 py-4"><span
+                                        class="pill-ok inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold">Best
+                                        Practice</span></td>
+                            </tr>
+                            <tr class="issue-row">
+                                <td class="px-5 py-4 font-medium text-slate-700">Age Range</td>
+                                <td class="px-5 py-4 text-slate-500 text-xs font-mono">BID_ONLY (Observation)</td>
+                                <td class="px-5 py-4"><span
+                                        class="pill-ok inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold">Best
+                                        Practice</span></td>
+                            </tr>
+                            <tr class="issue-row">
+                                <td class="px-5 py-4 font-medium text-slate-700">Gender</td>
+                                <td class="px-5 py-4 text-slate-500 text-xs font-mono">BID_ONLY (Observation)</td>
+                                <td class="px-5 py-4"><span
+                                        class="pill-ok inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold">Best
+                                        Practice</span></td>
+                            </tr>
+                            <tr class="issue-row">
+                                <td class="px-5 py-4 font-medium text-slate-700">Parental Status</td>
+                                <td class="px-5 py-4 text-slate-500 text-xs font-mono">BID_ONLY (Observation)</td>
+                                <td class="px-5 py-4"><span
+                                        class="pill-ok inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold">Best
+                                        Practice</span></td>
+                            </tr>
+                            <tr class="issue-row">
+                                <td class="px-5 py-4 font-medium text-slate-700">Income Range</td>
+                                <td class="px-5 py-4 text-slate-500 text-xs font-mono">BID_ONLY (Observation)</td>
+                                <td class="px-5 py-4"><span
+                                        class="pill-ok inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold">Best
+                                        Practice</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Conversion Tracking Detail -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h3 class="font-display text-xl font-semibold text-slate-900">Conversion Actions Status</h3>
+                <span class="text-xs text-slate-400 font-medium">28 total · 22 enabled · 2 hidden · 3 removed</span>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-left">
+                                <th class="px-5 py-4 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Conversion Action ID</th>
+                                <th
+                                    class="px-5 py-4 text-center font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                                    Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="conversionTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="px-5 py-4 bg-amber-50 border-t border-amber-100">
+                    <p class="text-sm text-amber-700 flex items-start gap-2">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                        <span><strong>Note:</strong> 22 active conversion actions is unusually high. Multiple
+                            overlapping actions can distort reported conversions and confuse Smart Bidding algorithms.
+                            Audit each action and remove or mark as "not primary" any duplicates or legacy
+                            pixels.</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════
+         5. ACTION PLAN
+    ══════════════════════════════════════════ -->
+        <div id="panel-action" class="tab-content">
+
+            <div class="flex items-center gap-3 mb-8">
+                <div class="h-px w-8 bg-indigo-500"></div>
+                <h2 class="font-display text-2xl font-semibold text-slate-900">Prioritised Action Plan</h2>
+            </div>
+
+            <div class="space-y-6">
+
+                <!-- P1 -->
+                <div
+                    class="glass-panel border-rose-200 bg-white/60 rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden group">
+                    <div class="absolute inset-0 pointer-events-none"
+                        style="background: radial-gradient(circle at 50% 0%, rgba(244,63,94,0.05), transparent 70%)">
+                    </div>
+                    <div class="flex-grow relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xs font-bold tracking-widest text-rose-600 uppercase">Priority 01</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-rose-200">🚨
+                                    Critical</span>
+                                <span
+                                    class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">Today</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-6">Fix Disapproved Brand Search Ads
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Open Brand | SA/AE campaign in Google Ads → find both
+                                    disapproved RSAs and review the policy violation reason.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Rewrite ad copy to comply with Google's
+                                    supplement/health advertising policies. Remove any prohibited health claims.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Improve RSA #2 ad strength from POOR to at least GOOD
+                                    by adding more varied headlines and descriptions.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Consider adding a 3rd RSA as a backup to ensure brand
+                                    serving is never fully interrupted.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="lg:w-48 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8 relative z-10">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">At-Risk
+                            Revenue</span>
+                        <span class="font-display text-4xl font-bold text-rose-600">28.1x</span>
+                        <span class="text-xs text-slate-500 mt-1">ROAS lost if brand goes dark</span>
+                    </div>
+                </div>
+
+                <!-- P2 -->
+                <div
+                    class="glass-panel border-amber-200 bg-white/60 rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden group">
+                    <div class="absolute inset-0 pointer-events-none"
+                        style="background: radial-gradient(circle at 50% 0%, rgba(245,158,11,0.05), transparent 70%)">
+                    </div>
+                    <div class="flex-grow relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xs font-bold tracking-widest text-amber-600 uppercase">Priority 02</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-amber-200">High
+                                    Impact</span>
+                                <span
+                                    class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">24
+                                    Hours</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-6">Fix Language Targeting on 2 PMax
+                            Campaigns</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Update "PMax | AE | Prospecting | MCV" language
+                                    setting from Arabic to the correct target language (English and/or local market
+                                    language).</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Update "PMax | SA | Prospecting | tROAS 3.7x" language
+                                    setting from Arabic to the correct target language.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm md:col-span-2">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Review audience signal and asset copy in these
+                                    campaigns to ensure no other Arabic-language settings are embedded in PMax asset
+                                    groups.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="lg:w-48 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8 relative z-10">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Affected
+                            Spend</span>
+                        <span class="font-display text-4xl font-bold text-amber-600">$9,934</span>
+                        <span class="text-xs text-slate-500 mt-1">possibly mis-targeted budget</span>
+                    </div>
+                </div>
+
+                <!-- P3 -->
+                <div
+                    class="glass-panel border-emerald-200 bg-white/60 rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden group">
+                    <div class="absolute inset-0 pointer-events-none"
+                        style="background: radial-gradient(circle at 50% 0%, rgba(16,185,129,0.05), transparent 70%)">
+                    </div>
+                    <div class="flex-grow relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xs font-bold tracking-widest text-emerald-600 uppercase">Priority
+                                03</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-emerald-200">High
+                                    Impact</span>
+                                <span
+                                    class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">This
+                                    Week</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-6">Scale Brand Search — Never
+                            Budget-Cap It</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Verify Brand campaign is never hitting a daily budget
+                                    cap — a 28x ROAS campaign should always be uncapped.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Check Search Impression Share — target 95%+ on all
+                                    brand terms including "bhealth", "b health", "b health shop".</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Add additional brand variant keywords: "bhealth.shop",
+                                    "b-health", and misspellings.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Once disapproved RSAs are fixed, monitor impression
+                                    share weekly to ensure brand capture stays at 95%+.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="lg:w-48 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8 relative z-10">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Current
+                            ROAS</span>
+                        <span class="font-display text-4xl font-bold text-emerald-600">28.1x</span>
+                        <span class="text-xs text-slate-500 mt-1">highest-efficiency campaign</span>
+                    </div>
+                </div>
+
+                <!-- P4 -->
+                <div
+                    class="glass-panel bg-white/60 rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden group">
+                    <div class="flex-grow relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xs font-bold tracking-widest text-indigo-600 uppercase">Priority 04</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-indigo-200">Medium
+                                    Impact</span>
+                                <span
+                                    class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">This
+                                    Month</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-6">Audit &amp; Clean Up 22
+                            Conversion Actions</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Audit all 22 enabled conversion actions — identify
+                                    duplicates, legacy events, and micro-conversions that shouldn't count toward primary
+                                    goals.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Set non-primary actions (e.g. page views, button
+                                    clicks) to "Not primary" so Smart Bidding optimises to true purchase conversions.
+                                </p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Verify the 2 HIDDEN conversion actions — determine if
+                                    they should be re-enabled or removed permanently.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Review 3 REMOVED actions to ensure they're legacy and
+                                    no replacement was needed — document in audit log.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="lg:w-48 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8 relative z-10">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Total
+                            Actions</span>
+                        <span class="font-display text-4xl font-bold text-indigo-600">28</span>
+                        <span class="text-xs text-slate-500 mt-1">22 enabled may overlap</span>
+                    </div>
+                </div>
+
+                <!-- P5 -->
+                <div
+                    class="glass-panel bg-white/60 rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden group">
+                    <div class="flex-grow relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xs font-bold tracking-widest text-slate-500 uppercase">Priority 05</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">Maintenance</span>
+                                <span
+                                    class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200">Next
+                                    Review</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-6">Improve Ad Strength &amp; Review
+                            Smart Campaign</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Once RSAs are re-approved, improve ad strength from
+                                    AVERAGE/POOR to GOOD or EXCELLENT by adding more unique headlines and descriptions.
+                                </p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Evaluate the "Vitamins and Food Supplements" Smart
+                                    Campaign — with $0 spend and 0 conversions, consider pausing or migrating to a
+                                    Standard campaign type.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Investigate the "APPROVED_LIMITED" status on the Smart
+                                    Campaign ad — likely due to supplement health claim policies. Revise messaging.</p>
+                            </div>
+                            <div
+                                class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0"></i>
+                                <p class="text-sm text-slate-700">Pull keyword Quality Scores and address any QS below 7
+                                    — low QS inflates CPC and reduces impression share.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="lg:w-48 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8 relative z-10">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Ad Strength
+                            Goal</span>
+                        <span class="font-display text-4xl font-bold text-slate-600">GOOD+</span>
+                        <span class="text-xs text-slate-500 mt-1">all RSAs target threshold</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-slate-200 mt-auto py-8 bg-white/50 backdrop-blur-sm">
+        <div
+            class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <p class="text-slate-500">Generated for <strong class="text-slate-700">bhealth.shop</strong> · Google Ads
+                Account Audit · Feb 1–24, 2026</p>
+            <div class="flex items-center gap-2 text-slate-400 font-bold tracking-widest uppercase text-xs">
+                <i data-lucide="activity" class="w-4 h-4 text-indigo-500"></i> Ad-Lab.io Internal
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // ── Tab switching ──
+        function switchTab(tabId, event) {
+            document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('panel-' + tabId).classList.add('active');
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+            if (tabId === 'campaigns' && !chartsRendered) { renderCharts(); chartsRendered = true; }
+            if (tabId === 'technical') renderConversionTable();
+            animateScoreBars();
+        }
+
+        // ── Number animation ──
+        function animateNumbers() {
+            document.querySelectorAll('.animate-number').forEach(el => {
+                const val = parseFloat(el.getAttribute('data-val'));
+                const decimals = parseInt(el.getAttribute('data-decimals') || 0);
+                let current = 0;
+                const steps = 60, duration = 1400, stepTime = duration / steps, increment = val / steps;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= val) { current = val; clearInterval(timer); }
+                    el.innerText = current.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+                }, stepTime);
+            });
+        }
+
+        // ── Score bar animation ──
+        function animateScoreBars() {
+            document.querySelectorAll('.score-bar-fill').forEach(el => {
+                const target = el.getAttribute('data-target');
+                if (target) {
+                    setTimeout(() => { el.style.width = target; }, 100);
+                }
+            });
+        }
+
+        // ── Gauge ──
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const circle = document.getElementById('healthCircle');
+                // 6.2/10 = 62% → dashoffset = 264 * (1 - 0.62) = 100.32
+                circle.style.strokeDashoffset = '100.32';
+                animateNumbers();
+                animateScoreBars();
+            }, 300);
+        });
+
+        // ── Chart.js defaults ──
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.font.family = '"Plus Jakarta Sans", sans-serif';
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(255,255,255,0.95)';
+        Chart.defaults.plugins.tooltip.titleColor = '#0f172a';
+        Chart.defaults.plugins.tooltip.bodyColor = '#334155';
+        Chart.defaults.plugins.tooltip.borderColor = 'rgba(0,0,0,0.1)';
+        Chart.defaults.plugins.tooltip.borderWidth = 1;
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.displayColors = false;
+
+        let chartsRendered = false;
+
+        const campaigns = [
+            { name: 'Brand | Search (TIS 95)', strategy: 'TARGET_IMPRESSION_SHARE', spend: 258.30, conv: 14.00, val: 7270.27, cpa: 18.45, roas: 28.14 },
+            { name: 'PMax | AE | Prospecting (MCV)', strategy: 'MAXIMIZE_CONV_VALUE', spend: 8523.51, conv: 54.20, val: 29106.63, cpa: 157.27, roas: 3.41 },
+            { name: 'PMax | SA/AE | Competitor (MCV)', strategy: 'MAXIMIZE_CONV_VALUE', spend: 6679.26, conv: 32.67, val: 14262.02, cpa: 204.48, roas: 2.14 },
+            { name: 'PMax | SA/AE | Remarketing (MCV)', strategy: 'MAXIMIZE_CONV_VALUE', spend: 5347.00, conv: 28.28, val: 11883.24, cpa: 189.07, roas: 2.22 },
+            { name: 'PMax | SA | Prospecting (tROAS)', strategy: 'MAXIMIZE_CONV_VALUE', spend: 1410.77, conv: 5.00, val: 2182.46, cpa: 282.15, roas: 1.55 },
+            { name: 'PMax FO | Non-Performers (tROAS)', strategy: 'MAXIMIZE_CONV_VALUE', spend: 374.01, conv: 2.04, val: 1040.31, cpa: 183.34, roas: 2.78 },
+            { name: 'Vitamins & Food Supplements', strategy: 'TARGET_SPEND', spend: 0, conv: 0, val: 0, cpa: 0, roas: 0 },
+        ];
+
+        function roasBadge(roas) {
+            if (roas === 0) return 'roas-badge-zero';
+            if (roas >= 10) return 'roas-badge-high';
+            if (roas >= 2) return 'roas-badge-mid';
+            return 'roas-badge-low';
+        }
+
+        function renderCampaignTable() {
+            const tbody = document.getElementById('campaignTableBody');
+            campaigns.forEach(c => {
+                const badge = roasBadge(c.roas);
+                const roasText = c.roas === 0 ? '—' : c.roas.toFixed(2) + 'x';
+                const cpaText = c.cpa === 0 ? '—' : '$' + c.cpa.toFixed(2);
+                tbody.innerHTML += `
+          <tr class="campaign-row">
+            <td class="px-5 py-4 font-semibold text-slate-800 max-w-[220px] truncate">${c.name}</td>
+            <td class="px-5 py-4"><span class="text-[10px] font-mono text-slate-500 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded">${c.strategy}</span></td>
+            <td class="px-5 py-4 text-right font-mono text-slate-600">$${c.spend.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+            <td class="px-5 py-4 text-right font-mono text-slate-600">${c.conv.toFixed(2)}</td>
+            <td class="px-5 py-4 text-right font-mono text-slate-600">$${c.val.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+            <td class="px-5 py-4 text-right font-mono text-slate-600">${cpaText}</td>
+            <td class="px-5 py-4 text-right"><span class="inline-block px-2.5 py-1 rounded-full text-xs font-bold font-display ${badge}">${roasText}</span></td>
+          </tr>`;
+            });
+        }
+        renderCampaignTable();
+
+        function renderConversionTable() {
+            const tbody = document.getElementById('conversionTableBody');
+            if (tbody.children.length > 0) return;
+            const actions = [
+                { id: '745960319', status: 'ENABLED' },
+                { id: '746581837', status: 'ENABLED' },
+                { id: '746581912', status: 'ENABLED' },
+                { id: '746610234', status: 'ENABLED' },
+                { id: '746610432', status: 'ENABLED' },
+                { id: '755527357', status: 'ENABLED' },
+                { id: '766868840', status: 'ENABLED' },
+                { id: '773997256', status: 'ENABLED' },
+                { id: '773998783', status: 'HIDDEN' },
+                { id: '796110155', status: 'REMOVED' },
+                { id: '797824050', status: 'ENABLED' },
+                { id: '797824053', status: 'ENABLED' },
+                { id: '837183253', status: 'ENABLED' },
+                { id: '894830304', status: 'ENABLED' },
+                { id: '6501404807', status: 'REMOVED' },
+                { id: '6591598506', status: 'HIDDEN' },
+                { id: '6591598509', status: 'ENABLED' },
+                { id: '6591598512', status: 'ENABLED' },
+                { id: '6713115838', status: 'ENABLED' },
+                { id: '6713115961', status: 'ENABLED' },
+                { id: '6713115964', status: 'ENABLED' },
+                { id: '6713115967', status: 'ENABLED' },
+                { id: '6713115970', status: 'ENABLED' },
+                { id: '6713115973', status: 'ENABLED' },
+                { id: '6713115976', status: 'ENABLED' },
+                { id: '6713207981', status: 'ENABLED' },
+                { id: '6740167433', status: 'REMOVED' },
+                { id: '6744773644', status: 'ENABLED' },
+            ];
+            actions.forEach(a => {
+                let pill = '';
+                if (a.status === 'ENABLED') pill = `<span class="pill-ok    inline-flex px-2.5 py-1 rounded-full text-xs font-bold">● Enabled</span>`;
+                if (a.status === 'HIDDEN') pill = `<span class="pill-hidden inline-flex px-2.5 py-1 rounded-full text-xs font-bold">◐ Hidden</span>`;
+                if (a.status === 'REMOVED') pill = `<span class="pill-neutral inline-flex px-2.5 py-1 rounded-full text-xs font-bold">✕ Removed</span>`;
+                tbody.innerHTML += `<tr class="issue-row"><td class="px-5 py-4 font-mono text-slate-500 text-xs">customers/3850935442/conversionActions/${a.id}</td><td class="px-5 py-4 text-center">${pill}</td></tr>`;
+            });
+        }
+
+        function renderCharts() {
+            // Short labels for charts
+            const labels = [
+                'Brand Search',
+                'PMax Prospect',
+                'PMax Competitor',
+                'PMax Remarket',
+                'PMax SA Prosp.',
+                'PMax Non-Perf.',
+                'Vitamins (SC)',
+            ];
+
+            // 1. Spend vs Value grouped bar
+            new Chart(document.getElementById('spendValueChart'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Spend ($)', data: [258.30, 8523.51, 6679.26, 5347.00, 1410.77, 374.01, 0], backgroundColor: '#6366f1', borderRadius: 4 },
+                        { label: 'Conv. Value ($)', data: [7270.27, 29106.63, 14262.02, 11883.24, 2182.46, 1040.31, 0], backgroundColor: '#10b981', borderRadius: 4 },
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: false, boxWidth: 28, padding: 16 } } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 30 } },
+                        y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => '$' + v.toLocaleString() } }
+                    }
+                }
+            });
+
+            // 2. ROAS horizontal bar
+            const roasData = [28.14, 3.41, 2.14, 2.22, 1.55, 2.78, 0];
+            new Chart(document.getElementById('roasChart'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'ROAS',
+                        data: roasData,
+                        backgroundColor: roasData.map(v => v >= 10 ? '#10b981' : v >= 2 ? '#6366f1' : v > 0 ? '#f97316' : '#cbd5e1'),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(0,0,0,0.04)', borderDash: [4, 4] }, ticks: { callback: v => v + 'x' } },
+                        y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // 3. Spend share donut
+            new Chart(document.getElementById('spendShareChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['PMax Prospecting AE', 'PMax Competitor', 'PMax Remarketing', 'PMax Prosp. SA', 'PMax Non-Perf.', 'Brand Search'],
+                    datasets: [{
+                        data: [8523.51, 6679.26, 5347.00, 1410.77, 374.01, 258.30],
+                        backgroundColor: ['#6366f1', '#f97316', '#10b981', '#8b5cf6', '#64748b', '#fbbf24'],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '72%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
+                        tooltip: { callbacks: { label: c => ' $' + c.parsed.toLocaleString() } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

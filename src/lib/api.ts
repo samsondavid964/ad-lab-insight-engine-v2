@@ -3,6 +3,10 @@ const WEEKLY_POLL_URL = "https://ad-lab.app.n8n.cloud/webhook/poll-for-completio
 
 const AUDIT_INITIATE_URL = "https://ad-lab.app.n8n.cloud/webhook/initiate-audit";
 const AUDIT_POLL_URL = "https://ad-lab.app.n8n.cloud/webhook/poll-for--audit-completion";
+
+const COMPETITOR_INITIATE_URL = "https://ad-lab.app.n8n.cloud/webhook/competitor-analysis-report";
+const COMPETITOR_POLL_URL = "https://ad-lab.app.n8n.cloud/webhook/poll-for-competitor-completion";
+
 const WEBHOOK_KEY = import.meta.env.VITE_WEBHOOK_KEY || "";
 
 export function generateJobId(): string {
@@ -18,7 +22,7 @@ export interface InitiatePayload {
   client_name: string;
   google_ads_id: string;
   date_range: { start: string; end: string };
-  reportType?: "weekly" | "audit";
+  reportType?: "weekly" | "audit" | "competitor";
 }
 
 export interface PollResponse {
@@ -29,7 +33,10 @@ export interface PollResponse {
 
 export async function initiateReport(payload: InitiatePayload): Promise<void> {
   const { reportType = "weekly", ...bodyPayload } = payload;
-  const url = reportType === "audit" ? AUDIT_INITIATE_URL : WEEKLY_INITIATE_URL;
+  const url =
+    reportType === "audit" ? AUDIT_INITIATE_URL :
+      reportType === "competitor" ? COMPETITOR_INITIATE_URL :
+        WEEKLY_INITIATE_URL;
 
   const res = await fetch(url, {
     method: "POST",
@@ -44,8 +51,11 @@ export async function initiateReport(payload: InitiatePayload): Promise<void> {
     throw new Error(`Failed to initiate report: ${res.status}`);
   }
 }
-export async function pollForCompletion(jobId: string, reportType: "weekly" | "audit" = "weekly"): Promise<PollResponse> {
-  const url = reportType === "audit" ? AUDIT_POLL_URL : WEEKLY_POLL_URL;
+export async function pollForCompletion(jobId: string, reportType: "weekly" | "audit" | "competitor" = "weekly"): Promise<PollResponse> {
+  const url =
+    reportType === "audit" ? AUDIT_POLL_URL :
+      reportType === "competitor" ? COMPETITOR_POLL_URL :
+        WEEKLY_POLL_URL;
   const res = await fetch(`${url}?job_id=${encodeURIComponent(jobId)}`, {
     headers: {
       "Authorization": `Bearer ${WEBHOOK_KEY}`
