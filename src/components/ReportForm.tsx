@@ -16,9 +16,16 @@ interface ReportFormProps {
   isLoading: boolean;
   submitLabel?: string;
   onBack?: () => void;
+  showDates?: boolean;
 }
 
-const ReportForm = ({ onSubmit, isLoading, submitLabel = "Generate Report", onBack }: ReportFormProps) => {
+const ReportForm = ({
+  onSubmit,
+  isLoading,
+  submitLabel = "Generate Report",
+  onBack,
+  showDates = true
+}: ReportFormProps) => {
   const [clientName, setClientName] = useState("");
   const [googleAdsId, setGoogleAdsId] = useState("");
   const [startDate, setStartDate] = useState<Date>();
@@ -26,13 +33,15 @@ const ReportForm = ({ onSubmit, isLoading, submitLabel = "Generate Report", onBa
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName.trim() || !googleAdsId.trim() || !startDate || !endDate) return;
+    if (!clientName.trim() || !googleAdsId.trim()) return;
+
+    if (showDates && (!startDate || !endDate)) return;
 
     onSubmit({
       clientName: clientName.trim(),
       googleAdsId: googleAdsId.trim(),
-      startDate: format(startDate, "yyyy-MM-dd"),
-      endDate: format(endDate, "yyyy-MM-dd"),
+      startDate: startDate ? format(startDate, "yyyy-MM-dd") : "1970-01-01",
+      endDate: endDate ? format(endDate, "yyyy-MM-dd") : "1970-01-01",
     });
   };
 
@@ -76,74 +85,76 @@ const ReportForm = ({ onSubmit, isLoading, submitLabel = "Generate Report", onBa
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                <CalendarIcon className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
-                Start Date
-              </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className={cn(
-                      "w-full h-12 justify-start text-left font-normal border-slate-200 bg-slate-50 hover:bg-white rounded-xl transition-all",
-                      !startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "MMM d, yyyy") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+          {showDates && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  <CalendarIcon className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
+                  Start Date
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      type="button"
+                      className={cn(
+                        "w-full h-12 justify-start text-left font-normal border-slate-200 bg-slate-50 hover:bg-white rounded-xl transition-all",
+                        !startDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "MMM d, yyyy") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  <CalendarIcon className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
+                  End Date
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      type="button"
+                      className={cn(
+                        "w-full h-12 justify-start text-left font-normal border-slate-200 bg-slate-50 hover:bg-white rounded-xl transition-all",
+                        !endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, "MMM d, yyyy") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={setEndDate}
+                      disabled={(date) => startDate ? date < startDate : false}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                <CalendarIcon className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
-                End Date
-              </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className={cn(
-                      "w-full h-12 justify-start text-left font-normal border-slate-200 bg-slate-50 hover:bg-white rounded-xl transition-all",
-                      !endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "MMM d, yyyy") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    disabled={(date) => startDate ? date < startDate : false}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+          )}
 
           <div className="flex flex-col gap-3">
             <Button
               type="submit"
-              disabled={isLoading || !clientName.trim() || !googleAdsId.trim() || !startDate || !endDate}
+              disabled={isLoading || !clientName.trim() || !googleAdsId.trim() || (showDates && (!startDate || !endDate))}
               className="w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white"
             >
               {submitLabel}
