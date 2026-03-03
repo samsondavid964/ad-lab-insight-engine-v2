@@ -360,7 +360,6 @@ const Index = () => {
                 isLoading={false}
                 submitLabel="Generate Weekly Report"
                 onBack={() => setState("dashboard")}
-                showDates={false}
               />
             </div>
           )}
