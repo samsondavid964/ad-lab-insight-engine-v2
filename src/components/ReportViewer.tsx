@@ -97,9 +97,30 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
   const handleShare = async () => {
     setSharing(true);
     try {
+      // Extract live DOM state (captures add/remove/contenteditable changes)
+      const doc = iframeRef.current?.contentDocument;
+      if (!doc) throw new Error("Cannot access report content");
+
+      const clone = doc.documentElement.cloneNode(true) as HTMLElement;
+      const body = clone.querySelector("body");
+      if (body) {
+        // Add view-mode class to disable all editing in shared version
+        body.classList.add("view-mode");
+        // Remove contenteditable attributes for clean shared HTML
+        body.querySelectorAll("[contenteditable]").forEach(el => {
+          el.removeAttribute("contenteditable");
+        });
+        // Remove edit-mode artifacts if present
+        clone.querySelector("#edit-mode-styles")?.remove();
+        clone.querySelectorAll(".section-drag-handle").forEach(el => el.remove());
+        body.removeAttribute("contenteditable");
+        body.style.removeProperty("outline");
+      }
+      const shareHtml = "<!DOCTYPE html>" + clone.outerHTML;
+
       const baseFilename = `${businessName.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}`;
       const filename = `${baseFilename}.html`;
-      const file = new Blob([currentHtml], { type: "text/html" });
+      const file = new Blob([shareHtml], { type: "text/html" });
 
       const { error: uploadError } = await supabase.storage
         .from("reports")

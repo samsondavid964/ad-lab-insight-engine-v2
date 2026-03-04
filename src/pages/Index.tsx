@@ -34,7 +34,6 @@ const Index = () => {
   const [elapsed, setElapsed] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const delayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentJobIdRef = useRef<string | null>(null);
 
   const refreshHistory = useCallback(async () => {
@@ -53,10 +52,8 @@ const Index = () => {
   const cleanup = useCallback(() => {
     if (pollRef.current) clearInterval(pollRef.current);
     if (timerRef.current) clearInterval(timerRef.current);
-    if (delayRef.current) clearTimeout(delayRef.current);
     pollRef.current = null;
     timerRef.current = null;
-    delayRef.current = null;
   }, []);
 
   useEffect(() => () => cleanup(), [cleanup]);
@@ -127,46 +124,44 @@ const Index = () => {
       }, 1000);
 
       let attempts = 0;
-      const maxAttempts = 16;
+      const maxAttempts = 10; // Poll once per minute for up to 10 minutes
 
-      delayRef.current = setTimeout(() => {
-        pollRef.current = setInterval(async () => {
-          attempts++;
-          try {
-            const result = await pollForCompletion(job_id, currentReportType);
+      pollRef.current = setInterval(async () => {
+        attempts++;
+        try {
+          const result = await pollForCompletion(job_id, currentReportType);
 
-            if (result.status === "complete" && result.html) {
-              cleanup();
-              // Update Supabase with the final HTML
-              await updateReport(job_id, { status: "complete", html: result.html });
-              setReportHtml(result.html);
-              await refreshHistory();
-              setState("report");
-              toast.success("Report generated successfully!");
-            } else if (result.status === "error") {
-              cleanup();
-              await updateReport(job_id, { status: "error" });
-              await refreshHistory();
-              setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
-              toast.error(result.error || "Report generation failed. Please try again.");
-            } else if (attempts >= maxAttempts) {
-              cleanup();
-              await updateReport(job_id, { status: "error" });
-              await refreshHistory();
-              setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
-              toast.error("Report generation timed out. Please try again.");
-            }
-          } catch {
-            if (attempts >= maxAttempts) {
-              cleanup();
-              await updateReport(job_id, { status: "error" });
-              await refreshHistory();
-              setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
-              toast.error("Report generation timed out. Please try again.");
-            }
+          if (result.status === "complete" && result.html) {
+            cleanup();
+            // Update Supabase with the final HTML
+            await updateReport(job_id, { status: "complete", html: result.html });
+            setReportHtml(result.html);
+            await refreshHistory();
+            setState("report");
+            toast.success("Report generated successfully!");
+          } else if (result.status === "error") {
+            cleanup();
+            await updateReport(job_id, { status: "error" });
+            await refreshHistory();
+            setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
+            toast.error(result.error || "Report generation failed. Please try again.");
+          } else if (attempts >= maxAttempts) {
+            cleanup();
+            await updateReport(job_id, { status: "error" });
+            await refreshHistory();
+            setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
+            toast.error("Report generation timed out. Please try again.");
           }
-        }, 20000);
-      }, 120000);
+        } catch {
+          if (attempts >= maxAttempts) {
+            cleanup();
+            await updateReport(job_id, { status: "error" });
+            await refreshHistory();
+            setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
+            toast.error("Report generation timed out. Please try again.");
+          }
+        }
+      }, 60000); // Poll every 60 seconds
     } catch {
       setState(currentReportType === "weekly" ? "weekly_form" : currentReportType === "audit" ? "audit_form" : "competitor_form");
       toast.error("Failed to initiate report. Please check your connection and try again.");
