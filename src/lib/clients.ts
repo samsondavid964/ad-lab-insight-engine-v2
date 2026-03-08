@@ -1,5 +1,6 @@
 export const CLIENT_NAMES = [
   "4little",
+  "aurilabs",
   "artiesmusic",
   "aussiecarsupplies",
   "bhealth",
