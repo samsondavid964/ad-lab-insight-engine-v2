@@ -17,6 +17,7 @@ interface ReportFormProps {
   submitLabel?: string;
   onBack?: () => void;
   showDates?: boolean;
+  allowCustomClientName?: boolean;
 }
 
 const ReportForm = ({
@@ -24,7 +25,8 @@ const ReportForm = ({
   isLoading,
   submitLabel = "Generate Report",
   onBack,
-  showDates = true
+  showDates = true,
+  allowCustomClientName = false
 }: ReportFormProps) => {
   const [clientName, setClientName] = useState("");
   const [googleAdsId, setGoogleAdsId] = useState("");
@@ -54,18 +56,30 @@ const ReportForm = ({
               <Building2 className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
               Client Name
             </Label>
-            <Select onValueChange={setClientName} value={clientName}>
-              <SelectTrigger className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 focus:ring-brand-500/20 rounded-xl transition-all">
-                <SelectValue placeholder="Select a client" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                {CLIENT_NAMES.map((name) => (
-                  <SelectItem key={name} value={name}>
-                    {name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {allowCustomClientName ? (
+              <Input
+                id="clientName"
+                type="text"
+                placeholder="Type client name..."
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 focus:ring-brand-500/20 rounded-xl transition-all"
+                required
+              />
+            ) : (
+              <Select onValueChange={setClientName} value={clientName}>
+                <SelectTrigger className="h-12 text-base border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 focus:ring-brand-500/20 rounded-xl transition-all">
+                  <SelectValue placeholder="Select a client" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  {CLIENT_NAMES.map((name) => (
+                    <SelectItem key={name} value={name}>
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="space-y-2">

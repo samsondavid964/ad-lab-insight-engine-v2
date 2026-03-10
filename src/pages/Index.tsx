@@ -375,6 +375,7 @@ const Index = () => {
                 isLoading={false}
                 submitLabel="Generate Audit"
                 onBack={() => setState("dashboard")}
+                allowCustomClientName={true}
               />
             </div>
           )}
