@@ -111,7 +111,7 @@ const SharedReport = () => {
       className="w-full h-screen border-0"
       title="Shared Report"
       src={blobUrl}
-      sandbox="allow-scripts allow-same-origin"
+      sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
     />
   );
 };

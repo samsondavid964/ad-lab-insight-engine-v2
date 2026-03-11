@@ -260,7 +260,7 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
         ref={iframeRef}
         className="flex-1 w-full border-0"
         title="Traffic Report"
-        sandbox="allow-scripts allow-same-origin"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
       />
     </div>
   );
