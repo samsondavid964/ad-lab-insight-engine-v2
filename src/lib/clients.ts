@@ -3,6 +3,7 @@ export const CLIENT_NAMES = [
   "artiesmusic",
   "aurilabs",
   "aussiecarsupplies",
+  "bbettermembership",
   "bhealth",
   "drinkdefendly",
   "ecomflow",
