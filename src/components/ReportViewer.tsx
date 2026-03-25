@@ -14,9 +14,10 @@ interface ReportViewerProps {
   html: string;
   businessName: string;
   onNewReport: () => void;
+  onSaveHtml?: (html: string) => Promise<void>;
 }
 
-const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) => {
+const ReportViewer = ({ html, businessName, onNewReport, onSaveHtml }: ReportViewerProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [sharing, setSharing] = useState(false);
   const [styleEditorOpen, setStyleEditorOpen] = useState(false);
@@ -63,11 +64,22 @@ const ReportViewer = ({ html, businessName, onNewReport }: ReportViewerProps) =>
     }
   }, [editMode]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const saved = extractHtml();
     if (saved) {
-      toggleEditMode();
-      toast.success("Changes saved!");
+      if (onSaveHtml) {
+        toast.promise(onSaveHtml(saved), {
+          loading: "Saving changes...",
+          success: () => {
+            toggleEditMode();
+            return "Changes saved!";
+          },
+          error: "Failed to save changes"
+        });
+      } else {
+        toggleEditMode();
+        toast.success("Changes saved locally!");
+      }
     }
   };
 

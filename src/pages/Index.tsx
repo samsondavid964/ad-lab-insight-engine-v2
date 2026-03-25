@@ -28,6 +28,7 @@ const Index = () => {
   const [currentReportType, setCurrentReportType] = useState<"weekly" | "audit" | "competitor">("weekly");
   const [clientName, setClientName] = useState("");
   const [reportHtml, setReportHtml] = useState("");
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [history, setHistory] = useState<ReportHistoryEntry[]>([]);
   const [automatedHistory, setAutomatedHistory] = useState<ReportHistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
@@ -136,6 +137,7 @@ const Index = () => {
             // Update Supabase with the final HTML
             await updateReport(job_id, { status: "complete", html: result.html });
             setReportHtml(result.html);
+            setCurrentJobId(job_id);
             await refreshHistory();
             setState("report");
             toast.success("Report generated successfully!");
@@ -172,6 +174,7 @@ const Index = () => {
     cleanup();
     setReportHtml("");
     setClientName("");
+    setCurrentJobId(null);
     setState("dashboard");
   };
 
@@ -179,8 +182,16 @@ const Index = () => {
     if (entry.html) {
       setClientName(entry.clientName);
       setReportHtml(entry.html);
+      setCurrentJobId(entry.jobId);
       setState("report");
     }
+  };
+
+  const handleSaveReportHtml = async (html: string) => {
+    if (!currentJobId) return;
+    await updateReport(currentJobId, { status: "complete", html });
+    setReportHtml(html);
+    await refreshHistory();
   };
 
   if (state === "loading") {
@@ -192,7 +203,9 @@ const Index = () => {
       <ReportViewer
         html={reportHtml}
         businessName={clientName}
-        onNewReport={handleNewReport} />
+        onNewReport={handleNewReport}
+        onSaveHtml={handleSaveReportHtml}
+      />
     );
   }
 
